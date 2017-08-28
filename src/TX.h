@@ -10,13 +10,10 @@
 
 class TX {
 public:
-    std::string from;
+    /*std::string from;
     std::string to;
-    std::string value;
-
-    TX tx() {
-        from = to = value = "";
-    }
+    std::string value;*/
+    std::string nonce, gasPrice, startGas, to, value, data, v, r, s;
 };
 
 

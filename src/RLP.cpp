@@ -17,16 +17,25 @@ std::string RLP::encode(std::string st) {
 }
 
 std::string RLP::encode(TX tx) {
-    std::string ret = encode(hexToBin(removeHexFormat(tx.from)))
+    /*std::string ret = encode(hexToBin(removeHexFormat(tx.from)))
                     + encode(hexToBin(removeHexFormat(tx.to)))
-                    + encode(hexToBin(removeHexFormat(tx.value)));
+                    + encode(hexToBin(removeHexFormat(tx.value)));*/
+    std::string ret = encode(hexToBin(removeHexFormat(tx.nonce)))
+                      + encode(hexToBin(removeHexFormat(tx.gasPrice)))
+                        + encode(hexToBin(removeHexFormat(tx.startGas)))
+                          + encode(hexToBin(removeHexFormat(tx.to)))
+                            + encode(hexToBin(removeHexFormat(tx.value)))
+                              + encode(hexToBin(removeHexFormat(tx.data)))
+                                + encode(hexToBin(removeHexFormat(tx.v)))
+                                  + encode(hexToBin(removeHexFormat(tx.r)))
+                                    + encode(hexToBin(removeHexFormat(tx.s)));
     return encodeLength(ret.length(), 192) + ret;
 }
 
 std::string RLP::encode(std::vector<std::string> list) {
     std::string ret = "";
     for (int i = 0; i < list.size(); i++) {
-        ret += encode(list[i]);
+        ret += encode(hexToBin(removeHexFormat(list[i])));
     }
     return encodeLength(ret.length(), 192) + ret;
 }
