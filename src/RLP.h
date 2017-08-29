@@ -8,6 +8,7 @@
 
 #include <string>
 #include "TX.h"
+#include "Proof.h"
 
 class RLP {
 public:
@@ -21,7 +22,15 @@ public:
 
     std::string intToHex(int);
     std::string hexToBin(std::string);
+    char byteToChar(std::string);
     int charToInt(char);
+
+    std::string binToHex(std::string);
+    char intToChar(int);
+
+    Proof decode(std::string);
+    int decode_list(int&, std::string);
+    std::string decode_string(int&, std::string, int&);
 };
 
 

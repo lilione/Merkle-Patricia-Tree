@@ -84,6 +84,7 @@ bool verifyProof(std::string path, TX tx, std::vector<Node> parentNodes, std::st
                         printf("currentNode.content[16] == rlp.encode(tx)]\n");
                         return 0;
                     }
+                    return 1;
                 }
                 nodeKey = currentNode.content[rlp.charToInt(path[pathPtr])];
                 pathPtr += 1;
@@ -96,6 +97,7 @@ bool verifyProof(std::string path, TX tx, std::vector<Node> parentNodes, std::st
                     }
                     printf("not found leaf node\n");
                     return 0;
+                    return 1;
                 }
                 else {
                     nodeKey = currentNode.content[1];
@@ -158,7 +160,26 @@ void read() {
     //rootHash
     std::string rootHash = read_string();
 
-    if (verifyProof(path, tx, parentNodes, rootHash)) {
+    std::vector<std::string> nodes;
+    for (int i = 0; i < parentNodes.size(); i++) {
+        nodes.push_back(rlp.binToHex(rlp.encode(parentNodes[i].content)));
+    }
+
+    std::vector<std::string> tmp;
+    tmp.push_back(rlp.encode(path));
+    tmp.push_back(rlp.encode(tx));
+    tmp.push_back(rlp.encode(nodes));
+    tmp.push_back(rlp.encode(rootHash));
+
+    for (int i = 0; i < tmp.size(); i++) {
+        tmp[i] = rlp.binToHex(tmp[i]);
+    }
+
+    std::string now = rlp.encode(tmp);
+    Proof proof = rlp.decode(now);
+
+    //if (verifyProof(path, tx, parentNodes, rootHash)) {
+    if (verifyProof(proof.path, proof.tx, proof.parentNodes, proof.rootHash)) {
         printf("Success!\n");
     }
     else {
