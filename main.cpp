@@ -3,6 +3,8 @@
 #include "src/RLP.h"
 #include "src/Node.h"
 #include "src/Keccak.h"
+#define CATCH_CONFIG_MAIN
+#include "src/catch.cpp"
 
 void test_rlp() {
     std::string st;
@@ -121,10 +123,11 @@ std::string read_string() {
     return ret;
 }
 
-void read() {
+bool read() {
     RLP rlp;
-    freopen("../input.txt", "r", stdin);
     char st[100];
+    gets(st);
+    gets(st);
 
     //path
     std::string path = read_string();
@@ -181,16 +184,83 @@ void read() {
     //if (verifyProof(path, tx, parentNodes, rootHash)) {
     if (verifyProof(proof.path, proof.tx, proof.parentNodes, proof.rootHash)) {
         printf("Success!\n");
+        return 1;
     }
     else {
         printf("Failed!\n");
+        return 0;
     }
-    fclose(stdin);
 }
 
-int main() {
-    //test_rlp();
-    //test_keccak();
-    read();
-    return 0;
+TEST_CASE("test") {
+    SECTION("verification") {
+        freopen("../data/input1.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input2.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input3.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input4.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input5.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input6.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input7.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input8.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input9.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input10.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input11.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input12.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input13.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
+    SECTION("verification") {
+        freopen("../data/input14.txt", "r", stdin);
+        REQUIRE( read() == true );
+        fclose(stdin);
+    }
 }

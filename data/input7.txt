@@ -1,0 +1,55 @@
+COMMAND getTransactionProof
+[object Object]
+03 
+1e bc 
+04 a8 17 c8 00 
+01 5f 90 
+f0 f8 b0 b8 db b1 12 42 61 fc 8d 77 8e 22 87 e3 fd 2c f4 f5 
+
+a9 05 9c bb 00 00 00 00 00 00 00 00 00 00 00 00 21 1b ef 7d 55 52 2b 2a 0d 67 32 8a aa 05 09 4b de e8 7d f1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 03 f9 40 ae 
+26 
+ea 02 26 2d 9c 8b c4 01 f3 a3 67 c8 87 a3 f6 66 0d 7e e4 2f 9a 78 c7 13 56 4f e9 2a 0d 9b 67 98 
+5e 31 9a 1a 83 61 33 eb 90 09 9c 6f 06 3f b1 07 f1 bc 58 1e 01 4d 1c 4c d1 17 e5 40 f6 05 8a ed 
+3
+17
+b9 70 ce e2 18 27 76 fc dd 40 1e 8c 76 bb 5b f7 69 e0 14 9b 7e 73 92 3d da e0 93 4f 1b 95 71 97 
+
+
+
+
+
+
+
+bf 36 21 b2 2f b9 cc a2 ac 13 30 21 b2 1b 29 35 73 1a 30 28 52 30 2c a0 5b 92 63 d5 53 28 a5 db 
+
+
+
+
+
+
+
+
+17
+
+24 7e 69 b6 74 0e db fc 99 a7 ec 1a 6b 16 22 24 d5 d3 fc f8 64 71 38 91 dc 6b 98 2d e4 26 25 62 
+27 47 cd b5 48 9d 52 77 67 cd d2 29 29 21 35 cd 92 37 5c 20 4d de 61 d8 5c 87 da 77 98 99 a6 4a 
+df 0a ef b5 ba 10 9a 06 58 11 a0 2e 3b d3 f1 98 03 5b 53 ca 72 d7 70 ce 78 5f de 44 3b e4 e9 ee 
+
+
+
+
+
+
+
+
+
+
+
+
+
+2
+20 
+f8 ac 82 1e bc 85 04 a8 17 c8 00 83 01 5f 90 94 f0 f8 b0 b8 db b1 12 42 61 fc 8d 77 8e 22 87 e3 fd 2c f4 f5 80 b8 44 a9 05 9c bb 00 00 00 00 00 00 00 00 00 00 00 00 21 1b ef 7d 55 52 2b 2a 0d 67 32 8a aa 05 09 4b de e8 7d f1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 03 f9 40 ae 26 a0 ea 02 26 2d 9c 8b c4 01 f3 a3 67 c8 87 a3 f6 66 0d 7e e4 2f 9a 78 c7 13 56 4f e9 2a 0d 9b 67 98 a0 5e 31 9a 1a 83 61 33 eb 90 09 9c 6f 06 3f b1 07 f1 bc 58 1e 01 4d 1c 4c d1 17 e5 40 f6 05 8a ed 
+18 19 7c bc e0 3e 41 7d 29 01 17 4b 2f f6 f6 47 1b 8c 9b e9 86 d8 98 cc 77 ee 5a 0d c5 11 ad 5c 
+<Buffer >
+true
