@@ -2,82 +2,54 @@
 // Created by lilione on 2017/8/23.
 //
 
-#include <sstream>
-#include <iostream>
+#include <cstdint>
 #include <vector>
+#include <string>
+#include <iostream>
 #include "RLP.h"
-#include "Node.h"
-#include "Proof.h"
 
-std::string RLP::encode(std::string st) {
-    st = hexToBin(removeHexFormat(st));
-    if (st.length() == 1 && (unsigned char)st[0] < 128) {
-        return st;
+const int offset_string = 128;
+const int offset_list = 192;
+
+ByteArray RLP::encode(ByteArray input) {
+    if (input.data.size() == 1 && input.data[0] < 128) {
+        return input;
     }
-    else {
-        return encodeLength(st.length(), 128) + st;
-    }
+    return encodeLength(input.data.size(), 128) + input;
 }
 
-std::string RLP::encode(TX tx) {
-    std::string ret = encode(tx.nonce)
-                      + encode(tx.gasPrice)
-                        + encode(tx.startGas)
-                          + encode(tx.to)
-                            + encode(tx.value)
-                              + encode(tx.data)
-                                + encode(tx.v)
-                                  + encode(tx.r)
-                                    + encode(tx.s);
-    return encodeLength(ret.length(), 192) + ret;
-}
-
-std::string RLP::encode(std::vector<std::string> list) {
-    std::string ret = "";
+ByteArray RLP::encode(std::vector<ByteArray> list) {
+    ByteArray output;
     for (int i = 0; i < list.size(); i++) {
-        ret += encode(list[i]);
+        output = output + encode(list[i]);
     }
-    return encodeLength(ret.length(), 192) + ret;
+    return encodeLength(output.data.size(), 192) + output;
 }
 
-std::string RLP::encodeLength(int len, int offset) {
+ByteArray RLP::encodeLength(int L, int offset) {
     //len should be less than 256**8
-    std::string ret;
-    if (len < 56) {
-        ret = char(len + offset);
+    if (L < 56) {
+        return ByteArray(L + offset);
     }
-    else {
-        std::string BL = intToHex(len);
-        ret = char(BL.length() + offset + 55) + BL;
+    ByteArray BL = toBinary(L);
+    return ByteArray(BL.data.size() + offset + 55) + BL;
+}
+
+ByteArray RLP::toBinary(int x) {
+    ByteArray ret;
+    if (x != 0) {
+        ret = toBinary(x / 256) + ByteArray(x % 256);
     }
     return ret;
 }
 
-std::string RLP::removeHexFormat(std::string st) {
-    if (st.length() > 1 && st[0] == '0' && st[1] == 'x') {
-        return st.substr(2);
-    }
-    return st;
-}
-
-std::string RLP::intToHex(int x) {
-    if (x == 0) {
-        return "";
-    }
-    return intToHex(x / 256) + (char)(x % 256);
-}
-
-std::string RLP::hexToBin(std::string st) {
+ByteArray RLP::hexToBin(std::string st) {
     //must of even length
-    std::string ret = "";
-    for (int i = 0; i + 1 < st.length(); i += 2) {
-        ret += byteToChar(st.substr(i, 2));
+    ByteArray ret;
+    for (int i = 0; i < st.length(); i += 2) {
+        ret = ret + ByteArray(charToInt(st[i]) * 16 + charToInt(st[i + 1]));
     }
     return ret;
-}
-
-char RLP::byteToChar(std::string st) {
-    return char(charToInt(st[0]) * 16 + charToInt(st[1]));
 }
 
 int RLP::charToInt(char ch) {
@@ -92,6 +64,16 @@ int RLP::charToInt(char ch) {
     }
 }
 
+std::string RLP::binToHex(ByteArray array) {
+    std::string ret;
+    for (int i = 0; i < array.data.size(); i++) {
+        int now = array.data[i];
+        ret += intToChar(now / 16);
+        ret += intToChar(now % 16);
+    }
+    return ret;
+}
+
 char RLP::intToChar(int x) {
     if (x < 10) {
         return '0' + x;
@@ -99,102 +81,64 @@ char RLP::intToChar(int x) {
     return 'a' + x - 10;
 }
 
-std::string RLP::binToHex(std::string st) {
+std::string RLP::toString(ByteArray array) {
     std::string ret = "";
-    for (int i = 0; i < st.length(); i++) {
-        int now = (st[i] + 256) % 256;
-        ret += intToChar(now / 16);
-        ret += intToChar(now % 16);
+    for (int i = 0; i < array.data.size(); i++) {
+        ret += char(array.data[i]);
     }
     return ret;
 }
 
-int RLP::decode_list(int& pos, std::string st) {
-    int ret;
-    if ((st[pos] + 256) % 256 <= 247) {
-        ret = (st[pos++] - 192 + 256) % 256;
-    }
-    else {
-        int now = (st[pos++] - 192 - 55 + 256) % 256;
-        ret = 0;
-        while (now > 0) {
-            ret = ret * 256 + (st[pos++] + 256) % 256;
-            now--;
-        }
-    }
-    return ret;
-}
-
-std::string RLP::decode_string(int& pos, std::string st, int& len) {
-    std::string ret;
-    if ((st[pos] + 256) % 256 <= 127) {
-        len = 1;
-        ret = st[pos++];
-    }
-    else {
-        if ((st[pos] + 256) % 256 <= 183) {
-            len = (st[pos++] - 128 + 256) % 256;
-        }
-        else {
-            int now = (st[pos++] - 128 - 55 + 256) % 256;
-            len = 0;
-            while (now > 0) {
-                len = len * 256 + ((int)st[pos++] + 256) % 256;
-                now--;
-            }
-        }
-        ret = st.substr(pos, len);
-        pos += len;
-    }
-    return ret;
-}
-
-Proof RLP::decode(std::string st) {
-    int pos = 0;
-
-    int len = decode_list(pos, st);
-
-    //path
-    std::string path_st = decode_string(pos, st, len);
-    int path_pos = 0;
-    std::string path = binToHex(decode_string(path_pos, path_st, len));
-
-    //tx
-    std::string tx_st = decode_string(pos, st, len);
-    TX tx;
-    int tx_pos = 0;
-    len = decode_list(tx_pos, tx_st);
-    tx.nonce = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.gasPrice = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.startGas = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.to = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.value = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.data = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.v = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.r = binToHex(decode_string(tx_pos, tx_st, len));
-    tx.s = binToHex(decode_string(tx_pos, tx_st, len));
-
-    //parentNodes
+Proof RLP::decode(ByteArray input) {
+    std::vector<ByteArray> elements = decode_list(input);
+    ByteArray path = decode_string(elements[0]);
+    std::vector<ByteArray> tx = decode_list(elements[1]);
+    std::vector<ByteArray> parentNodes_list = decode_list(elements[2]);
     std::vector<Node> parentNodes;
-    std::string parentNodes_dim0_st = decode_string(pos, st, len);
-    int parentNodes_dim0_pos = 0;
-    len = decode_list(parentNodes_dim0_pos, parentNodes_dim0_st);
-    while (parentNodes_dim0_pos < parentNodes_dim0_st.length()) {
-        Node node;
-        std::string parentNodes_dim1_st = decode_string(parentNodes_dim0_pos, parentNodes_dim0_st, len);
-        int parentNodes_dim1_pos = 0;
-        len = decode_list(parentNodes_dim1_pos, parentNodes_dim1_st);
-        while (parentNodes_dim1_pos < parentNodes_dim1_st.length()) {
-            std::string tmp = decode_string(parentNodes_dim1_pos, parentNodes_dim1_st, len);
-            node.content.push_back(binToHex(tmp));
-        }
-        parentNodes.push_back(node);
+    for (int i = 0; i < parentNodes_list.size(); i++) {
+        parentNodes.push_back(Node(decode_list(parentNodes_list[i])));
     }
-
-    //rootHash
-    std::string rootHash_st = decode_string(pos, st, len);
-    int rootHash_pos = 0;
-    std::string rootHash = binToHex(decode_string(rootHash_pos, rootHash_st, len));
-
+    ByteArray rootHash = decode_string(elements[3]);
     return Proof(path, tx, parentNodes, rootHash);
+}
+
+std::vector<ByteArray> RLP::decode_list(ByteArray input) {
+    int pos = 0, len = decodeLength(input, pos);
+    int end = len + pos;
+    std::vector<ByteArray> ret;
+    while (pos < end) {
+        int now = decodeLength(input, pos);
+        ret.push_back(input.substr(pos, pos + now));
+        pos += now;
+    }
+    return ret;
+}
+
+ByteArray RLP::decode_string(ByteArray input) {
+    int pos = 0, len = decodeLength(input, pos);
+    return input.substr(pos, pos + len);
+}
+
+int RLP::decodeLength(ByteArray input, int& pos) {
+    int len, offset;
+    if (input.data[pos] < offset_list) {
+        if (input.data[pos] < 55) {
+            return 1;
+        }
+        offset = offset_string;
+    }
+    else {
+        offset = offset_list;
+    }
+    if (input.data[pos] <= offset + 55) {
+        len = input.data[pos++] - offset;
+    }
+    else {
+        int now = input.data[pos++] - offset - 55;
+        len = 0;
+        for (int i = 0; i < now; i++) {
+            len = len * 256 + input.data[pos++];
+        }
+    }
+    return len;
 }

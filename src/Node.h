@@ -6,12 +6,22 @@
 #define MERKLE_PARTRICIA_TREE_NODE_H
 
 
-#include <string>
+#include <cstdint>
 #include <vector>
+#include "ByteArray.h"
 
 class Node {
 public:
-    std::vector<std::string> content;
+    std::vector<ByteArray> content;
+
+    Node() {}
+
+    Node(std::vector<ByteArray> content):
+        content(content) {}
+
+    void operator= (const Node& other) {
+        this->content = other.content;
+    }
 };
 
 

@@ -6,32 +6,26 @@
 #define MERKLE_PARTRICIA_TREE_RLP_H
 
 
-#include <string>
-#include "TX.h"
+#include <cstdint>
+#include <vector>
+#include "ByteArray.h"
 #include "Proof.h"
 
 class RLP {
 public:
-    std::string encode(std::string);
-    std::string encode(TX);
-    std::string encode(std::vector<std::string>);
-
-    std::string encodeLength(int, int);
-
-    std::string removeHexFormat(std::string);
-
-    std::string intToHex(int);
-    std::string hexToBin(std::string);
-    char byteToChar(std::string);
+    ByteArray encode(ByteArray);
+    ByteArray encode(std::vector<ByteArray>);
+    ByteArray encodeLength(int, int);
+    ByteArray toBinary(int);
+    ByteArray hexToBin(std::string);
     int charToInt(char);
-
-    std::string binToHex(std::string);
+    std::string binToHex(ByteArray);
     char intToChar(int);
-
-    Proof decode(std::string);
-    int decode_list(int&, std::string);
-    std::string decode_string(int&, std::string, int&);
+    std::string toString(ByteArray);
+    Proof decode(ByteArray);
+    std::vector<ByteArray> decode_list(ByteArray);
+    ByteArray decode_string(ByteArray);
+    int decodeLength(ByteArray, int&);
 };
-
 
 #endif //MERKLE_PARTRICIA_TREE_RLP_H
