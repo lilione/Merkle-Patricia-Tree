@@ -43,6 +43,8 @@ public:
     }
 
     ByteArray substr(int, int);
+
+    std::string toString();
 };
 
 

@@ -11,17 +11,17 @@
 const int offset_string = 128;
 const int offset_list = 192;
 
-ByteArray RLP::encode(ByteArray input) {
+ByteArray RLP::encodeString(ByteArray input) {
     if (input.data.size() == 1 && input.data[0] < 128) {
         return input;
     }
     return encodeLength(input.data.size(), 128) + input;
 }
 
-ByteArray RLP::encode(std::vector<ByteArray> list) {
+ByteArray RLP::encodeList(std::vector<ByteArray> list) {
     ByteArray output;
     for (int i = 0; i < list.size(); i++) {
-        output = output + encode(list[i]);
+        output = output + list[i];
     }
     return encodeLength(output.data.size(), 192) + output;
 }
@@ -31,19 +31,19 @@ ByteArray RLP::encodeLength(int L, int offset) {
     if (L < 56) {
         return ByteArray(L + offset);
     }
-    ByteArray BL = toBinary(L);
+    ByteArray BL = intToByteArray(L);
     return ByteArray(BL.data.size() + offset + 55) + BL;
 }
 
-ByteArray RLP::toBinary(int x) {
+ByteArray RLP::intToByteArray(int x) {
     ByteArray ret;
     if (x != 0) {
-        ret = toBinary(x / 256) + ByteArray(x % 256);
+        ret = intToByteArray(x / 256) + ByteArray(x % 256);
     }
     return ret;
 }
 
-ByteArray RLP::hexToBin(std::string st) {
+ByteArray RLP::hexStringToByteArray(std::string st) {
     //must of even length
     ByteArray ret;
     for (int i = 0; i < st.length(); i += 2) {
@@ -64,7 +64,7 @@ int RLP::charToInt(char ch) {
     }
 }
 
-std::string RLP::binToHex(ByteArray array) {
+std::string RLP::byteArrayToHexString(ByteArray array) {
     std::string ret;
     for (int i = 0; i < array.data.size(); i++) {
         int now = array.data[i];
@@ -81,40 +81,46 @@ char RLP::intToChar(int x) {
     return 'a' + x - 10;
 }
 
-std::string RLP::toString(ByteArray array) {
-    std::string ret = "";
-    for (int i = 0; i < array.data.size(); i++) {
-        ret += char(array.data[i]);
+Proof RLP::decodeProof(ByteArray input) {
+    std::vector<ByteArray> elements = decodeList(input);
+    std::vector<ByteArray> path_list = decodeList(elements[0]);
+    std::vector<Node> path;
+    for (int i = 0; i < path_list.size(); i++) {
+        path.push_back(Node(decodeList(path_list[i])));
     }
-    return ret;
+    ByteArray key = remove_length(elements[1]);
+    return Proof(key, path);
 }
 
-Proof RLP::decode(ByteArray input) {
-    std::vector<ByteArray> elements = decode_list(input);
-    ByteArray path = decode_string(elements[0]);
-    std::vector<ByteArray> tx = decode_list(elements[1]);
-    std::vector<ByteArray> parentNodes_list = decode_list(elements[2]);
-    std::vector<Node> parentNodes;
-    for (int i = 0; i < parentNodes_list.size(); i++) {
-        parentNodes.push_back(Node(decode_list(parentNodes_list[i])));
+Account RLP::decodeAccount(ByteArray input) {
+    std::vector<ByteArray> elements = decodeList(input);
+    ByteArray _nonce = remove_length(elements[0]);
+    unsigned int nonce = 0;
+    for (int i = 0; i < _nonce.data.size(); i++) {
+        nonce = nonce * 256 + _nonce.data[i];
     }
-    ByteArray rootHash = decode_string(elements[3]);
-    return Proof(path, tx, parentNodes, rootHash);
+    ByteArray _balance = remove_length(elements[1]);
+    BigInt balance;
+    ByteArray rootHash = remove_length(elements[2]);
+    ByteArray codeHash = remove_length(elements[3]);
+    return Account(nonce, balance, rootHash, codeHash);
 }
 
-std::vector<ByteArray> RLP::decode_list(ByteArray input) {
+std::vector<ByteArray> RLP::decodeList(ByteArray input) {
     int pos = 0, len = decodeLength(input, pos);
     int end = len + pos;
     std::vector<ByteArray> ret;
+    int pre = pos;
     while (pos < end) {
         int now = decodeLength(input, pos);
-        ret.push_back(input.substr(pos, pos + now));
+        ret.push_back(input.substr(pre, pos + now));
         pos += now;
+        pre = pos;
     }
     return ret;
 }
 
-ByteArray RLP::decode_string(ByteArray input) {
+ByteArray RLP::remove_length(ByteArray input) {
     int pos = 0, len = decodeLength(input, pos);
     return input.substr(pos, pos + len);
 }

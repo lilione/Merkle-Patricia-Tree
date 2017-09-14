@@ -11,13 +11,16 @@
 
 class Proof {
 public:
-    ByteArray path;
-    std::vector<ByteArray> tx;
-    std::vector<Node> parentNodes;
-    ByteArray rootHash;
+    ByteArray key;
+    //std::vector<ByteArray> tx;
+    std::vector<Node> path;
+    //ByteArray rootHash;
 
-    Proof(ByteArray path, std::vector<ByteArray> tx, std::vector<Node> parentNodes, ByteArray rootHash):
-            path(path), tx(tx), parentNodes(parentNodes), rootHash(rootHash) {}
+    /*Proof(ByteArray key, std::vector<ByteArray> tx, std::vector<Node> path, ByteArray rootHash):
+            key(key), tx(tx), path(path), rootHash(rootHash) {}*/
+
+    Proof(ByteArray key, std::vector<Node> path):
+            key(key), path(path) {}
 };
 
 

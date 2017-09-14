@@ -10,21 +10,23 @@
 #include <vector>
 #include "ByteArray.h"
 #include "Proof.h"
+#include "Account.h"
+
 
 class RLP {
 public:
-    ByteArray encode(ByteArray);
-    ByteArray encode(std::vector<ByteArray>);
+    ByteArray encodeString(ByteArray);
+    ByteArray encodeList(std::vector<ByteArray>);
     ByteArray encodeLength(int, int);
-    ByteArray toBinary(int);
-    ByteArray hexToBin(std::string);
+    ByteArray intToByteArray(int);
+    ByteArray hexStringToByteArray(std::string);
     int charToInt(char);
-    std::string binToHex(ByteArray);
+    std::string byteArrayToHexString(ByteArray);
     char intToChar(int);
-    std::string toString(ByteArray);
-    Proof decode(ByteArray);
-    std::vector<ByteArray> decode_list(ByteArray);
-    ByteArray decode_string(ByteArray);
+    Proof decodeProof(ByteArray);
+    Account decodeAccount(ByteArray);
+    std::vector<ByteArray> decodeList(ByteArray);
+    ByteArray remove_length(ByteArray);
     int decodeLength(ByteArray, int&);
 };
 

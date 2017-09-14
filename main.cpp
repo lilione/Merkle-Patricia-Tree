@@ -3,70 +3,76 @@
 #include "src/RLP.h"
 #include "src/Node.h"
 #include "src/Keccak.h"
-#define CATCH_CONFIG_MAIN
+//#define CATCH_CONFIG_MAIN
+
 #include "src/catch.cpp"
 #include "src/Proof.h"
 
-int removeFlag(std::string encodedPath, std::string path, int pathPtr) {
+int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     if (encodedPath[0] == '0' || encodedPath[0] == '2') {
         encodedPath = encodedPath.substr(2);
     }
     else {
         encodedPath = encodedPath.substr(1);
     }
-    if (encodedPath == path.substr(pathPtr, encodedPath.length())) {
+    if (encodedPath == key.substr(keyPos, encodedPath.length())) {
         return encodedPath.length();
     }
-    printf("encodedPath != path.substr(pathPtr, encodedPath.length())");
+    printf("encodedPath != key.substr(keyPos, encodedPath.length())");
     return -1;
 }
 
-bool verifyProof(std::string path, std::vector<ByteArray> tx, std::vector<Node> parentNodes, std::string rootHash) {
+//bool verifyProof(std::string key, std::vector<ByteArray> tx, std::vector<Node> path, std::string rootHash) {
+std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof, std::string rootHash) {
     RLP rlp;
     Keccak keccak;
-    std::string nodeKey = rootHash;
-    int pathPtr = 0;
-    for (int i = 0; i < parentNodes.size(); i++) {
-        Node currentNode = parentNodes[i];
-        if (nodeKey != keccak(rlp.toString(rlp.encode(currentNode.content)))) {
-            printf("nodeKey != keccak(rlp.encode(currentNode.content))\n");
-            return 0;
+    std::string wantHash = rootHash;
+    int keyPos = 0;
+    for (int i = 0; i < proof.size(); i++) {
+        Node currentNode = proof[i];
+        if (wantHash != keccak(rlp.encodeList(currentNode.content).toString())) {
+            printf("wantHash != keccak(rlp.encode(currentNode.content))\n");
+            return std::make_pair(ByteArray(), false);
         }
-        if (pathPtr > path.length()) {
-            printf("pathPtr >= path.length()");
-            return 0;
+        if (keyPos > key.length()) {
+            printf("keyPos > key.length()");
+            return std::make_pair(ByteArray(), false);;
         }
         switch(currentNode.content.size()) {
-            case 17:
-                if (pathPtr == path.length()) {
-                    if (currentNode.content[16] == rlp.encode(tx)) {
-                        return 1;
-                    } else {
-                        printf("currentNode.content[16] == rlp.encode(tx)]\n");
-                        return 0;
-                    }
+            case 17: {
+                if (keyPos == key.length()) {
+                    if (i == proof.size() - 1)
+                        return std::make_pair(currentNode.content[16], true);
+                    else
+                        return std::make_pair(ByteArray(), false);
                 }
-                nodeKey = rlp.binToHex(currentNode.content[rlp.charToInt(path[pathPtr])]);
-                pathPtr += 1;
+                wantHash = rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[rlp.charToInt(key[keyPos])]));
+                keyPos += 1;
                 break;
-            case 2:
-                pathPtr += removeFlag(rlp.binToHex(currentNode.content[0]), path, pathPtr);
-                if (pathPtr == path.length()) {
-                    if (currentNode.content[1] == rlp.encode(tx)) {
-                        return 1;
-                    }
-                    printf("not found leaf node\n");
-                    return 0;
-                }
-                else {
-                    nodeKey = rlp.binToHex(currentNode.content[1]);
+            }
+            case 2: {
+                int offset = removeFlag(rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[0])), key, keyPos);
+                if (offset == -1)
+                    return std::make_pair(ByteArray(), false);
+                keyPos += offset;
+                if (keyPos == key.length()) {
+                    if (i == proof.size() - 1)
+                        return std::make_pair(rlp.remove_length(currentNode.content[1]), true);
+                    else
+                        return std::make_pair(ByteArray(), false);
+                } else {
+                    wantHash = rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[1]));
                 }
                 break;
-            default:
+            }
+            default: {
                 printf("all nodes must be length 17 or 2\n");
-                return 0;
+                return std::make_pair(ByteArray(), false);
+            }
         }
     }
+    printf("Length of Proof is not enough\n");
+    return std::make_pair(ByteArray(), false);
 }
 
 ByteArray read_string() {
@@ -77,59 +83,41 @@ ByteArray read_string() {
         if (st[i] != ' ') ret += st[i];
     }
     RLP rlp;
-    return rlp.hexToBin(ret);
+    return rlp.hexStringToByteArray(ret);
 }
 
 bool read() {
     RLP rlp;
-    char st[100];
-    gets(st);
-    gets(st);
 
-    //path
-    ByteArray path = read_string();
-
-    //tx
-    std::vector<ByteArray> tx;
-    for (int i = 0; i < 9; i++) {
-        tx.push_back(read_string());
-    }
-
-    //parentNodes
-    std::vector<Node> parentNodes;
-    int n;
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++) {
-        Node node;
-        int m;
-        scanf("%d", &m);
-        gets(st);
-        for (int j = 0; j < m; j++) {
-            node.content.push_back(read_string());
-        }
-        parentNodes.push_back(node);
-    }
-
-    //rootHash
     ByteArray rootHash = read_string();
 
-    //encode
-    std::vector<ByteArray> list;
-    list.push_back(rlp.encode(path));
-    list.push_back(rlp.encode(tx));
-    std::vector<ByteArray> nodes;
-    for (int i = 0; i < parentNodes.size(); i++) {
-        nodes.push_back(rlp.encode(parentNodes[i].content));
+    ByteArray encoded = read_string();
+
+    Proof proof = rlp.decodeProof(encoded);
+
+    /*for (int k = 0; k < proof.key.data.size(); k++) {
+        printf("%d ", proof.key.data[k]);
     }
-    list.push_back(rlp.encode(nodes));
-    list.push_back(rlp.encode(rootHash));
+    printf("\n");
 
-    ByteArray encoded = rlp.encode(list);
+    std::cout << proof.path.size() << std::endl;
+    for (int i = 0; i < proof.path.size(); i++) {
+        Node now = proof.path[i];
+        printf("node %d with %d branches\n", i, now.content.size());
+        for (int j = 0; j < now.content.size(); j++) {
+            for (int k = 0; k < now.content[j].data.size(); k++) {
+                printf("%d ", now.content[j].data[k]);
+            }
+            printf("\n");
+        }
+    }*/
 
-    Proof proof = rlp.decode(encoded);
+    Keccak keccak;
 
-    if (verifyProof(rlp.binToHex(proof.path), proof.tx, proof.parentNodes, rlp.binToHex(proof.rootHash))) {
+    auto ret = verifyProof(keccak(proof.key.toString()), proof.path, rlp.byteArrayToHexString(rootHash));
+    if (ret.second) {
         printf("Success!\n");
+        Account account = rlp.decodeAccount(ret.first);
         return 1;
     }
     else {
@@ -138,8 +126,9 @@ bool read() {
     }
 }
 
+/*
 TEST_CASE("test") {
-    SECTION("verification") {
+    /*SECTION("verification") {
         freopen("../data/input1.txt", "r", stdin);
         REQUIRE( read() == true );
         fclose(stdin);
@@ -209,4 +198,16 @@ TEST_CASE("test") {
         REQUIRE( read() == true );
         fclose(stdin);
     }
+    SECTION("verification") {
+        printf("asdjfklas;fk");
+        freopen("../data/input.txt", "r", stdin);
+        REQUIRE( read());
+        fclose(stdin);
+    }
+}*/
+
+int main() {
+    freopen("../data/input.txt", "r", stdin);
+    read();
+    fclose(stdin);
 }
