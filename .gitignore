@@ -104,4 +104,4 @@ ENV/
 CMakeLists.txt
 cmake-build-debug/
 
-./src/catch.cpp
+src/catch.cpp
