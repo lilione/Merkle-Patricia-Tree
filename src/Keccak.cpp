@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "Keccak.h"
-#include "ByteArray.h"
+#include "Bytes.h"
 #include "RLP.h"
 
 /// same as reset()
@@ -238,7 +238,7 @@ std::string Keccak::operator()(const std::string& text)
     return getHash();
 }
 /// compute Keccak hash of a ByteArray
-ByteArray Keccak::operator()(ByteArray byteArray) {
+Bytes Keccak::operator()(Bytes byteArray) {
     RLP rlp;
     std::string text = byteArray.toString();
     reset();

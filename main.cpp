@@ -20,20 +20,20 @@ int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     return -1;
 }
 
-std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof, ByteArray rootHash) {
+std::pair<Bytes, bool> verifyProof(std::string key, std::vector<Node> proof, Bytes rootHash) {
     RLP rlp;
     Keccak keccak;
-    ByteArray wantHash = rootHash;
+    Bytes wantHash = rootHash;
     int keyPos = 0;
     for (int i = 0; i < proof.size(); i++) {
         Node currentNode = proof[i];
         if (wantHash != keccak(rlp.encodeList(currentNode.content))) {
             printf("wantHash != keccak(rlp.encodeList(currentNode.content))\n");
-            return std::make_pair(ByteArray(), false);
+            return std::make_pair(Bytes(), false);
         }
         if (keyPos > key.length()) {
             printf("keyPos > key.length()");
-            return std::make_pair(ByteArray(), false);;
+            return std::make_pair(Bytes(), false);;
         }
         switch(currentNode.content.size()) {
             case 17: {
@@ -41,7 +41,7 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
                     if (i == proof.size() - 1)
                         return std::make_pair(rlp.remove_length(currentNode.content[16]), true);
                     else
-                        return std::make_pair(ByteArray(), false);
+                        return std::make_pair(Bytes(), false);
                 }
                 wantHash = rlp.remove_length(currentNode.content[rlp.charToInt(key[keyPos])]);
                 keyPos += 1;
@@ -50,13 +50,13 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
             case 2: {
                 int offset = removeFlag(rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[0])), key, keyPos);
                 if (offset == -1)
-                    return std::make_pair(ByteArray(), false);
+                    return std::make_pair(Bytes(), false);
                 keyPos += offset;
                 if (keyPos == key.length()) {
                     if (i == proof.size() - 1) {
                         return std::make_pair(rlp.remove_length(currentNode.content[1]), true);
                     }
-                    return std::make_pair(ByteArray(), false);
+                    return std::make_pair(Bytes(), false);
                 } else {
                     wantHash = rlp.remove_length(currentNode.content[1]);
                 }
@@ -64,15 +64,15 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
             }
             default: {
                 printf("all nodes must be length 17 or 2\n");
-                return std::make_pair(ByteArray(), false);
+                return std::make_pair(Bytes(), false);
             }
         }
     }
     printf("Length of Proof is not enough\n");
-    return std::make_pair(ByteArray(), false);
+    return std::make_pair(Bytes(), false);
 }
 
-ByteArray read_string() {
+Bytes read_string() {
     char st[1000000];
     gets(st);
     std::string ret = "";
@@ -87,13 +87,13 @@ bool read() {
     RLP rlp;
     Keccak keccak;
 
-    ByteArray encoded = read_string();
+    Bytes encoded = read_string();
 
     auto proofs = rlp.decodeProof(encoded);
 
     Proof accoutProof = proofs.first, balanceProof = proofs.second;
 
-    ByteArray accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content));
+    Bytes accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content));
 
     auto ret = verifyProof(rlp.byteArrayToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 
@@ -104,7 +104,7 @@ bool read() {
     printf("accountProof Success!\n");
 
     Account account = rlp.decodeAccount(ret.first);
-    ByteArray balanceRootHash = account.rootHash;
+    Bytes balanceRootHash = account.rootHash;
 
     ret = verifyProof(rlp.byteArrayToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
 
@@ -114,7 +114,7 @@ bool read() {
     }
     printf("balanceProof Success!\n");
 
-    ByteArray _balance = rlp.remove_length(ret.first);
+    Bytes _balance = rlp.remove_length(ret.first);
     uint256_t balance = 0;
     for (int i = 0; i < _balance.data.size(); i++) {
         balance = balance * 256 + _balance.data[i];
@@ -124,7 +124,7 @@ bool read() {
 }
 
 int main() {
-    freopen("../data/input.txt", "r", stdin);
+    freopen("../data/inputProof.txt", "r", stdin);
     read();
     fclose(stdin);
 }

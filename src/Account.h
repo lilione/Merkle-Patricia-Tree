@@ -6,17 +6,18 @@
 #define MERKLE_PARTRICIA_TREE_ACCOUNT_H
 
 
-#include "ByteArray.h"
+#include "Bytes.h"
 #include "uint256_t.h"
+#include "../libethash/ethash.h"
 
 class Account {
 public:
-    unsigned int nonce;
+    uint64_t nonce;
     uint256_t balance;
-    ByteArray rootHash;
-    ByteArray codeHash;
+    Bytes rootHash;
+    Bytes codeHash;
 
-    Account(unsigned int nonce, uint256_t balance, ByteArray rootHash, ByteArray codeHash):
+    Account(uint64_t nonce, uint256_t balance, Bytes rootHash, Bytes codeHash):
             nonce(nonce), balance(balance), rootHash(rootHash), codeHash(codeHash) {}
 };
 

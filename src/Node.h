@@ -8,15 +8,15 @@
 
 #include <cstdint>
 #include <vector>
-#include "ByteArray.h"
+#include "Bytes.h"
 
 class Node {
 public:
-    std::vector<ByteArray> content;
+    std::vector<Bytes> content;
 
     Node() {}
 
-    Node(std::vector<ByteArray> content):
+    Node(std::vector<Bytes> content):
         content(content) {}
 
     void operator= (const Node& other) {

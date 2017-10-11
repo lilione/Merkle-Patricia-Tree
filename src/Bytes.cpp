@@ -3,14 +3,14 @@
 //
 
 #include <string>
-#include "ByteArray.h"
+#include "Bytes.h"
 
-ByteArray::ByteArray(uint8_t value) {
+Bytes::Bytes(uint8_t value) {
     data.push_back(value);
 }
 
-ByteArray ByteArray::operator+ (const ByteArray& other) {
-    ByteArray ret;
+Bytes Bytes::operator+ (const Bytes& other) {
+    Bytes ret;
     for (int i = 0; i < this->data.size(); i++) {
         ret.data.push_back(this->data[i]);
     }
@@ -20,7 +20,7 @@ ByteArray ByteArray::operator+ (const ByteArray& other) {
     return ret;
 }
 
-bool ByteArray::operator== (const ByteArray& other) {
+bool Bytes::operator== (const Bytes& other) {
     if (this->data.size() != other.data.size()) return 0;
     for (int i = 0; i < this->data.size(); i++) {
         if (this->data[i] != other.data[i]) return 0;
@@ -28,7 +28,7 @@ bool ByteArray::operator== (const ByteArray& other) {
     return 1;
 }
 
-bool ByteArray::operator!= (const ByteArray& other) {
+bool Bytes::operator!= (const Bytes& other) {
     if (this->data.size() != other.data.size()) return 1;
     for (int i = 0; i < this->data.size(); i++) {
         if (this->data[i] != other.data[i]) return 1;
@@ -36,19 +36,19 @@ bool ByteArray::operator!= (const ByteArray& other) {
     return 0;
 }
 
-void ByteArray::operator= (const ByteArray& other) {
+void Bytes::operator= (const Bytes& other) {
     this->data = other.data;
 }
 
-ByteArray ByteArray::substr(int start, int end) {
-    ByteArray ret;
+Bytes Bytes::substr(int start, int end) {
+    Bytes ret;
     for (int i = start; i < end; i++) {
         ret.data.push_back(data[i]);
     }
     return ret;
 }
 
-std::string ByteArray::toString() {
+std::string Bytes::toString() {
     std::string st;
     for (int i = 0; i < data.size(); i++) {
         st += char(data[i]);
@@ -56,22 +56,22 @@ std::string ByteArray::toString() {
     return st;
 }
 
-ByteArray ByteArray::stringToByteArray(std::string st) {
-    ByteArray ret;
+Bytes Bytes::stringToByteArray(std::string st) {
+    Bytes ret;
     for (int i = 0; i < st.length(); i++) {
         ret.data.push_back(uint8_t(st[i]));
     }
     return ret;
 }
 
-void ByteArray::output(ByteArray byteArray) {
+void Bytes::output(Bytes byteArray) {
     for (int i = 0; i < byteArray.data.size(); i++) {
         printf("%d ", byteArray.data[i]);
     }
     printf("\n");
 }
 
-void ByteArray::outputHex(ByteArray byteArray) {
+void Bytes::outputHex(Bytes byteArray) {
     for (int i = 0; i < byteArray.data.size(); i++) {
         printf("%02x", byteArray.data[i]);
     }

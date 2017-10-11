@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include "ByteArray.h"
+#include "Bytes.h"
 
 class Keccak //: public Hash
 {
@@ -21,7 +21,7 @@ public:
     /// compute hash of a string, excluding final zero
     std::string operator()(const std::string& text);
     /// compute hash of ByteArray
-    ByteArray operator()(const ByteArray);
+    Bytes operator()(const Bytes);
     /// add arbitrary number of bytes
     void add(const void* data, size_t numBytes);
     /// return latest hash as hex characters

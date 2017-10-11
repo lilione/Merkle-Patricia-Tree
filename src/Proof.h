@@ -6,21 +6,21 @@
 #define MERKLE_PARTRICIA_TREE_PROOF_H
 
 
-#include "ByteArray.h"
+#include "Bytes.h"
 #include "Node.h"
 
 class Proof {
 public:
-    ByteArray key;
+    Bytes key;
     std::vector<Node> path;
-    ByteArray tokenAddr, userAddr;
+    Bytes tokenAddr, userAddr;
 
     Proof() {}
 
-    Proof(ByteArray key, std::vector<Node> path):
+    Proof(Bytes key, std::vector<Node> path):
             key(key), path(path) {}
 
-    Proof(ByteArray key, std::vector<Node> path, ByteArray tokenAddr, ByteArray userAddr):
+    Proof(Bytes key, std::vector<Node> path, Bytes tokenAddr, Bytes userAddr):
             key(key), path(path), tokenAddr(tokenAddr), userAddr(userAddr) {}
 
     static void output(Proof);

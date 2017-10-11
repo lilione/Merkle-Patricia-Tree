@@ -8,26 +8,26 @@
 
 #include <cstdint>
 #include <vector>
-#include "ByteArray.h"
+#include "Bytes.h"
 #include "Proof.h"
 #include "Account.h"
 
 
 class RLP {
 public:
-    ByteArray encodeString(ByteArray);
-    ByteArray encodeList(std::vector<ByteArray>);
-    ByteArray encodeLength(int, int);
-    ByteArray intToByteArray(int);
-    ByteArray hexStringToByteArray(std::string);
+    Bytes encodeString(Bytes);
+    Bytes encodeList(std::vector<Bytes>);
+    Bytes encodeLength(int, int);
+    Bytes intToByteArray(int);
+    Bytes hexStringToByteArray(std::string);
     int charToInt(char);
-    std::string byteArrayToHexString(ByteArray);
+    std::string byteArrayToHexString(Bytes);
     char intToChar(int);
-    std::pair<Proof, Proof> decodeProof(ByteArray);
-    Account decodeAccount(ByteArray);
-    std::vector<ByteArray> decodeList(ByteArray);
-    ByteArray remove_length(ByteArray);
-    int decodeLength(ByteArray, int&);
+    std::pair<Proof, Proof> decodeProof(Bytes);
+    Account decodeAccount(Bytes);
+    std::vector<Bytes> decodeList(Bytes);
+    Bytes remove_length(Bytes);
+    int decodeLength(Bytes, int&);
 };
 
 #endif //MERKLE_PARTRICIA_TREE_RLP_H
