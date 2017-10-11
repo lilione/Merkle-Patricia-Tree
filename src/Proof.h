@@ -13,11 +13,15 @@ class Proof {
 public:
     ByteArray key;
     std::vector<Node> path;
+    ByteArray tokenAddr, userAddr;
 
     Proof() {}
 
     Proof(ByteArray key, std::vector<Node> path):
             key(key), path(path) {}
+
+    Proof(ByteArray key, std::vector<Node> path, ByteArray tokenAddr, ByteArray userAddr):
+            key(key), path(path), tokenAddr(tokenAddr), userAddr(userAddr) {}
 
     static void output(Proof);
 };

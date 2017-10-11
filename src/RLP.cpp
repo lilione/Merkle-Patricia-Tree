@@ -106,7 +106,7 @@ std::pair<Proof, Proof> RLP::decodeProof(ByteArray input) {
     ByteArray pos = remove_length(elements[5]);
 
     key = RLP::hexStringToByteArray(keccak(RLP::hexStringToByteArray(keccak(userAddr.toString() + RLP::hexStringToByteArray(keccak(tokenAddr.toString() + pos.toString())).toString())).toString()));
-    Proof balanceProof = Proof(key, path);
+    Proof balanceProof = Proof(key, path, tokenAddr, userAddr);
 
     return std::make_pair(accoutProof, balanceProof);
 };
@@ -119,7 +119,10 @@ Account RLP::decodeAccount(ByteArray input) {
         nonce = nonce * 256 + _nonce.data[i];
     }
     ByteArray _balance = remove_length(elements[1]);
-    BigInt balance;
+    uint256_t balance = 0;
+    for (int i = 0; i < _balance.data.size(); i++) {
+        balance = balance * 256 + _balance.data[i];
+    }
     ByteArray rootHash = remove_length(elements[2]);
     ByteArray codeHash = remove_length(elements[3]);
     return Account(nonce, balance, rootHash, codeHash);

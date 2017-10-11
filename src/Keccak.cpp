@@ -2,13 +2,14 @@
 // Created by lilione on 2017/8/24.
 //
 
+#include <iostream>
 #include "Keccak.h"
 #include "ByteArray.h"
 #include "RLP.h"
 
 /// same as reset()
 Keccak::Keccak(Bits bits)
-        : m_blockSize(200 - 2 * (bits / 8)),
+        : m_blockSize(200 - 2 * ((uint)bits / 8)),
           m_bits(bits)
 {
     reset();
@@ -179,7 +180,7 @@ void Keccak::add(const void* data, size_t numBytes)
 /// process everything left in the internal buffer
 void Keccak::processBuffer()
 {
-    unsigned int blockSize = 200 - 2 * (m_bits / 8);
+    unsigned int blockSize = 200 - 2 * ((uint)m_bits / 8);
     // add padding
     size_t offset = m_bufferSize;
     // add a "1" byte
@@ -199,7 +200,7 @@ std::string Keccak::getHash()
     // convert hash to string
     static const char dec2hex[16 + 1] = "0123456789abcdef";
     // number of significant elements in hash (uint64_t)
-    unsigned int hashLength = m_bits / 64;
+    unsigned int hashLength = (uint)m_bits / 64;
     std::string result;
     for (unsigned int i = 0; i < hashLength; i++)
         for (unsigned int j = 0; j < 8; j++) // 64 bits => 8 bytes
@@ -210,7 +211,7 @@ std::string Keccak::getHash()
             result += dec2hex[oneByte & 15];
         }
     // Keccak224's last entry in m_hash provides only 32 bits instead of 64 bits
-    unsigned int remainder = m_bits - hashLength * 64;
+    unsigned int remainder = (uint)m_bits - hashLength * 64;
     unsigned int processed = 0;
     while (processed < remainder)
     {
@@ -239,7 +240,7 @@ std::string Keccak::operator()(const std::string& text)
 /// compute Keccak hash of a ByteArray
 ByteArray Keccak::operator()(ByteArray byteArray) {
     RLP rlp;
-    std::string text = rlp.byteArrayToHexString(byteArray);
+    std::string text = byteArray.toString();
     reset();
     add(text.c_str(), text.size());
     return rlp.hexStringToByteArray(getHash());

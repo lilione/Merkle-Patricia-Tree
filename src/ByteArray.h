@@ -16,32 +16,15 @@ public:
 
     ByteArray() {}
 
-    ByteArray(uint8_t value) {
-        data.push_back(value);
-    }
+    ByteArray(uint8_t);
 
-    ByteArray operator+ (const ByteArray& other) {
-        ByteArray ret;
-        for (int i = 0; i < this->data.size(); i++) {
-            ret.data.push_back(this->data[i]);
-        }
-        for (int i = 0; i < other.data.size(); i++) {
-            ret.data.push_back(other.data[i]);
-        }
-        return ret;
-    }
+    ByteArray operator+ (const ByteArray&);
 
-    bool operator== (const ByteArray& other) {
-        if (this->data.size() != other.data.size()) return 0;
-        for (int i = 0; i < this->data.size(); i++) {
-            if (this->data[i] != other.data[i]) return 0;
-        }
-        return 1;
-    }
+    bool operator== (const ByteArray&);
 
-    void operator= (const ByteArray& other) {
-        this->data = other.data;
-    }
+    bool operator!= (const ByteArray&);
+
+    void operator= (const ByteArray&);
 
     ByteArray substr(int, int);
 

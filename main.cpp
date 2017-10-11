@@ -20,15 +20,15 @@ int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     return -1;
 }
 
-std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof, std::string rootHash) {
+std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof, ByteArray rootHash) {
     RLP rlp;
     Keccak keccak;
-    std::string wantHash = rootHash;
+    ByteArray wantHash = rootHash;
     int keyPos = 0;
     for (int i = 0; i < proof.size(); i++) {
         Node currentNode = proof[i];
-        if (wantHash != keccak(rlp.encodeList(currentNode.content).toString())) {
-            printf("wantHash != keccak(rlp.encode(currentNode.content))\n");
+        if (wantHash != keccak(rlp.encodeList(currentNode.content))) {
+            printf("wantHash != keccak(rlp.encodeList(currentNode.content))\n");
             return std::make_pair(ByteArray(), false);
         }
         if (keyPos > key.length()) {
@@ -39,11 +39,11 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
             case 17: {
                 if (keyPos == key.length()) {
                     if (i == proof.size() - 1)
-                        return std::make_pair(currentNode.content[16], true);
+                        return std::make_pair(rlp.remove_length(currentNode.content[16]), true);
                     else
                         return std::make_pair(ByteArray(), false);
                 }
-                wantHash = rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[rlp.charToInt(key[keyPos])]));
+                wantHash = rlp.remove_length(currentNode.content[rlp.charToInt(key[keyPos])]);
                 keyPos += 1;
                 break;
             }
@@ -58,7 +58,7 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
                     }
                     return std::make_pair(ByteArray(), false);
                 } else {
-                    wantHash = rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[1]));
+                    wantHash = rlp.remove_length(currentNode.content[1]);
                 }
                 break;
             }
@@ -93,7 +93,7 @@ bool read() {
 
     Proof accoutProof = proofs.first, balanceProof = proofs.second;
 
-    std::string accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content).toString());
+    ByteArray accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content));
 
     auto ret = verifyProof(rlp.byteArrayToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 
@@ -104,7 +104,7 @@ bool read() {
     printf("accountProof Success!\n");
 
     Account account = rlp.decodeAccount(ret.first);
-    std::string balanceRootHash = rlp.byteArrayToHexString(account.rootHash);
+    ByteArray balanceRootHash = account.rootHash;
 
     ret = verifyProof(rlp.byteArrayToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
 
@@ -114,8 +114,11 @@ bool read() {
     }
     printf("balanceProof Success!\n");
 
-    ByteArray _balance = ret.first;
-    ByteArray::outputHex(_balance);
+    ByteArray _balance = rlp.remove_length(ret.first);
+    uint256_t balance = 0;
+    for (int i = 0; i < _balance.data.size(); i++) {
+        balance = balance * 256 + _balance.data[i];
+    }
 
     return 1;
 }

@@ -7,16 +7,16 @@
 
 
 #include "ByteArray.h"
-#include "BigInt.h"
+#include "uint256_t.h"
 
 class Account {
 public:
     unsigned int nonce;
-    BigInt balance;
+    uint256_t balance;
     ByteArray rootHash;
     ByteArray codeHash;
 
-    Account(unsigned int nonce, BigInt balance, ByteArray rootHash, ByteArray codeHash):
+    Account(unsigned int nonce, uint256_t balance, ByteArray rootHash, ByteArray codeHash):
             nonce(nonce), balance(balance), rootHash(rootHash), codeHash(codeHash) {}
 };
 
