@@ -8,6 +8,7 @@
 #include <iostream>
 #include "RLP.h"
 #include "Keccak.h"
+#include "Transform.h"
 
 const int offset_string = 128;
 const int offset_list = 192;
@@ -92,7 +93,7 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
     for (int i = 0; i < path_list.size(); i++) {
         path.push_back(Node(decodeList(path_list[i])));
     }
-    Bytes key = RLP::hexStringToByteArray(keccak(remove_length(elements[1]).toString()));
+    Bytes key = keccak(remove_length(elements[1]));
     Proof accoutProof = Proof(key, path);
 
     path_list = decodeList(elements[2]);
@@ -105,7 +106,8 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
     Bytes tokenAddr = remove_length(elements[4]);
     Bytes pos = remove_length(elements[5]);
 
-    key = RLP::hexStringToByteArray(keccak(RLP::hexStringToByteArray(keccak(userAddr.toString() + RLP::hexStringToByteArray(keccak(tokenAddr.toString() + pos.toString())).toString())).toString()));
+    key = keccak(keccak(userAddr + keccak(tokenAddr + pos)));
+
     Proof balanceProof = Proof(key, path, tokenAddr, userAddr);
 
     return std::make_pair(accoutProof, balanceProof);

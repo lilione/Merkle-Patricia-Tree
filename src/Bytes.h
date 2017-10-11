@@ -9,15 +9,18 @@
 #include <cstdint>
 #include <vector>
 #include <cstring>
+
 #include "../libethash/ethash.h"
+
+using byte = uint8_t;
 
 class Bytes {
 public:
-    std::vector<uint8_t> data;
+    std::vector<byte> data;
 
     Bytes() {}
 
-    Bytes(uint8_t);
+    Bytes(byte);
 
     Bytes operator+ (const Bytes&);
 
@@ -29,14 +32,8 @@ public:
 
     Bytes substr(int, int);
 
-    std::string toString();
-
-    static Bytes stringToByteArray(std::string);
-
     static void output(Bytes);
     static void outputHex(Bytes);
-
-    ethash_h256 hashToBytes(const Bytes &);
 };
 
 

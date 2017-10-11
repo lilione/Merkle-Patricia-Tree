@@ -3,6 +3,7 @@
 //
 
 #include <string>
+
 #include "Bytes.h"
 
 Bytes::Bytes(uint8_t value) {
@@ -44,22 +45,6 @@ Bytes Bytes::substr(int start, int end) {
     Bytes ret;
     for (int i = start; i < end; i++) {
         ret.data.push_back(data[i]);
-    }
-    return ret;
-}
-
-std::string Bytes::toString() {
-    std::string st;
-    for (int i = 0; i < data.size(); i++) {
-        st += char(data[i]);
-    }
-    return st;
-}
-
-Bytes Bytes::stringToByteArray(std::string st) {
-    Bytes ret;
-    for (int i = 0; i < st.length(); i++) {
-        ret.data.push_back(uint8_t(st[i]));
     }
     return ret;
 }

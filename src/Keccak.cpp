@@ -6,6 +6,7 @@
 #include "Keccak.h"
 #include "Bytes.h"
 #include "RLP.h"
+#include "Transform.h"
 
 /// same as reset()
 Keccak::Keccak(Bits bits)
@@ -240,7 +241,7 @@ std::string Keccak::operator()(const std::string& text)
 /// compute Keccak hash of a ByteArray
 Bytes Keccak::operator()(Bytes byteArray) {
     RLP rlp;
-    std::string text = byteArray.toString();
+    std::string text = Transform::bytesToString(byteArray);
     reset();
     add(text.c_str(), text.size());
     return rlp.hexStringToByteArray(getHash());

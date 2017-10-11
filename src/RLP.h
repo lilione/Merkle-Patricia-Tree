@@ -5,13 +5,12 @@
 #ifndef MERKLE_PARTRICIA_TREE_RLP_H
 #define MERKLE_PARTRICIA_TREE_RLP_H
 
-
 #include <cstdint>
 #include <vector>
+
 #include "Bytes.h"
 #include "Proof.h"
 #include "Account.h"
-
 
 class RLP {
 public:
