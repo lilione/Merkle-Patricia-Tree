@@ -1,11 +1,9 @@
 #include <iostream>
 #include <vector>
+
 #include "src/RLP.h"
 #include "src/Node.h"
 #include "src/Keccak.h"
-//#define CATCH_CONFIG_MAIN
-
-#include "src/catch.cpp"
 #include "src/Proof.h"
 
 int removeFlag(std::string encodedPath, std::string key, int keyPos) {
@@ -22,7 +20,6 @@ int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     return -1;
 }
 
-//bool verifyProof(std::string key, std::vector<ByteArray> tx, std::vector<Node> path, std::string rootHash) {
 std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof, std::string rootHash) {
     RLP rlp;
     Keccak keccak;
@@ -56,10 +53,10 @@ std::pair<ByteArray, bool> verifyProof(std::string key, std::vector<Node> proof,
                     return std::make_pair(ByteArray(), false);
                 keyPos += offset;
                 if (keyPos == key.length()) {
-                    if (i == proof.size() - 1)
+                    if (i == proof.size() - 1) {
                         return std::make_pair(rlp.remove_length(currentNode.content[1]), true);
-                    else
-                        return std::make_pair(ByteArray(), false);
+                    }
+                    return std::make_pair(ByteArray(), false);
                 } else {
                     wantHash = rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[1]));
                 }
@@ -88,123 +85,40 @@ ByteArray read_string() {
 
 bool read() {
     RLP rlp;
-
-    ByteArray rootHash = read_string();
+    Keccak keccak;
 
     ByteArray encoded = read_string();
 
-    Proof proof = rlp.decodeProof(encoded);
+    auto proofs = rlp.decodeProof(encoded);
 
-    /*for (int k = 0; k < proof.key.data.size(); k++) {
-        printf("%d ", proof.key.data[k]);
-    }
-    printf("\n");
+    Proof accoutProof = proofs.first, balanceProof = proofs.second;
 
-    std::cout << proof.path.size() << std::endl;
-    for (int i = 0; i < proof.path.size(); i++) {
-        Node now = proof.path[i];
-        printf("node %d with %d branches\n", i, now.content.size());
-        for (int j = 0; j < now.content.size(); j++) {
-            for (int k = 0; k < now.content[j].data.size(); k++) {
-                printf("%d ", now.content[j].data[k]);
-            }
-            printf("\n");
-        }
-    }*/
+    std::string accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content).toString());
 
-    Keccak keccak;
+    auto ret = verifyProof(rlp.byteArrayToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 
-    auto ret = verifyProof(keccak(proof.key.toString()), proof.path, rlp.byteArrayToHexString(rootHash));
-    if (ret.second) {
-        printf("Success!\n");
-        Account account = rlp.decodeAccount(ret.first);
-        return 1;
-    }
-    else {
-        printf("Failed!\n");
+    if (!ret.second) {
+        printf("accountProof Failed!\n");
         return 0;
     }
-}
+    printf("accountProof Success!\n");
 
-/*
-TEST_CASE("test") {
-    /*SECTION("verification") {
-        freopen("../data/input1.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
+    Account account = rlp.decodeAccount(ret.first);
+    std::string balanceRootHash = rlp.byteArrayToHexString(account.rootHash);
+
+    ret = verifyProof(rlp.byteArrayToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
+
+    if (!ret.second) {
+        printf("balanceProof Failed!\n");
+        return 0;
     }
-    SECTION("verification") {
-        freopen("../data/input2.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input3.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input4.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input5.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input6.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input7.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input8.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input9.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input10.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input11.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input12.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input13.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        freopen("../data/input14.txt", "r", stdin);
-        REQUIRE( read() == true );
-        fclose(stdin);
-    }
-    SECTION("verification") {
-        printf("asdjfklas;fk");
-        freopen("../data/input.txt", "r", stdin);
-        REQUIRE( read());
-        fclose(stdin);
-    }
-}*/
+    printf("balanceProof Success!\n");
+
+    ByteArray _balance = ret.first;
+    ByteArray::outputHex(_balance);
+
+    return 1;
+}
 
 int main() {
     freopen("../data/input.txt", "r", stdin);

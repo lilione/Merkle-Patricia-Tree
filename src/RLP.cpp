@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include "RLP.h"
+#include "Keccak.h"
 
 const int offset_string = 128;
 const int offset_list = 192;
@@ -19,11 +20,11 @@ ByteArray RLP::encodeString(ByteArray input) {
 }
 
 ByteArray RLP::encodeList(std::vector<ByteArray> list) {
-    ByteArray output;
+    ByteArray ret;
     for (int i = 0; i < list.size(); i++) {
-        output = output + list[i];
+        ret = ret + list[i];
     }
-    return encodeLength(output.data.size(), 192) + output;
+    return encodeLength(ret.data.size(), 192) + ret;
 }
 
 ByteArray RLP::encodeLength(int L, int offset) {
@@ -81,16 +82,34 @@ char RLP::intToChar(int x) {
     return 'a' + x - 10;
 }
 
-Proof RLP::decodeProof(ByteArray input) {
+std::pair<Proof, Proof> RLP::decodeProof(ByteArray input) {
+    Keccak keccak;
+    RLP rlp;
+
     std::vector<ByteArray> elements = decodeList(input);
     std::vector<ByteArray> path_list = decodeList(elements[0]);
     std::vector<Node> path;
     for (int i = 0; i < path_list.size(); i++) {
         path.push_back(Node(decodeList(path_list[i])));
     }
-    ByteArray key = remove_length(elements[1]);
-    return Proof(key, path);
-}
+    ByteArray key = RLP::hexStringToByteArray(keccak(remove_length(elements[1]).toString()));
+    Proof accoutProof = Proof(key, path);
+
+    path_list = decodeList(elements[2]);
+    path.clear();
+    for (int i = 0; i < path_list.size(); i++) {
+        path.push_back(Node(decodeList(path_list[i])));
+    }
+
+    ByteArray userAddr = remove_length(elements[3]);
+    ByteArray tokenAddr = remove_length(elements[4]);
+    ByteArray pos = remove_length(elements[5]);
+
+    key = RLP::hexStringToByteArray(keccak(RLP::hexStringToByteArray(keccak(userAddr.toString() + RLP::hexStringToByteArray(keccak(tokenAddr.toString() + pos.toString())).toString())).toString()));
+    Proof balanceProof = Proof(key, path);
+
+    return std::make_pair(accoutProof, balanceProof);
+};
 
 Account RLP::decodeAccount(ByteArray input) {
     std::vector<ByteArray> elements = decodeList(input);

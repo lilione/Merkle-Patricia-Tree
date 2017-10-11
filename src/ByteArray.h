@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <cstring>
 
 class ByteArray {
 public:
@@ -45,6 +46,11 @@ public:
     ByteArray substr(int, int);
 
     std::string toString();
+
+    static ByteArray stringToByteArray(std::string);
+
+    static void output(ByteArray);
+    static void outputHex(ByteArray);
 };
 
 

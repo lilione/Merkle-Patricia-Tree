@@ -20,3 +20,25 @@ std::string ByteArray::toString() {
     }
     return st;
 }
+
+ByteArray ByteArray::stringToByteArray(std::string st) {
+    ByteArray ret;
+    for (int i = 0; i < st.length(); i++) {
+        ret.data.push_back(uint8_t(st[i]));
+    }
+    return ret;
+}
+
+void ByteArray::output(ByteArray byteArray) {
+    for (int i = 0; i < byteArray.data.size(); i++) {
+        printf("%d ", byteArray.data[i]);
+    }
+    printf("\n");
+}
+
+void ByteArray::outputHex(ByteArray byteArray) {
+    for (int i = 0; i < byteArray.data.size(); i++) {
+        printf("%02x", byteArray.data[i]);
+    }
+    printf("\n");
+}

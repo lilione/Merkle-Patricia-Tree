@@ -23,7 +23,7 @@ public:
     int charToInt(char);
     std::string byteArrayToHexString(ByteArray);
     char intToChar(int);
-    Proof decodeProof(ByteArray);
+    std::pair<Proof, Proof> decodeProof(ByteArray);
     Account decodeAccount(ByteArray);
     std::vector<ByteArray> decodeList(ByteArray);
     ByteArray remove_length(ByteArray);
