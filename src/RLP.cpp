@@ -33,54 +33,8 @@ Bytes RLP::encodeLength(int L, int offset) {
     if (L < 56) {
         return Bytes(L + offset);
     }
-    Bytes BL = intToByteArray(L);
+    Bytes BL = Transform::intToBytes(L);
     return Bytes(BL.data.size() + offset + 55) + BL;
-}
-
-Bytes RLP::intToByteArray(int x) {
-    Bytes ret;
-    if (x != 0) {
-        ret = intToByteArray(x / 256) + Bytes(x % 256);
-    }
-    return ret;
-}
-
-Bytes RLP::hexStringToByteArray(std::string st) {
-    //must of even length
-    Bytes ret;
-    for (int i = 0; i < st.length(); i += 2) {
-        ret = ret + Bytes(charToInt(st[i]) * 16 + charToInt(st[i + 1]));
-    }
-    return ret;
-}
-
-int RLP::charToInt(char ch) {
-    if (isdigit(ch)) {
-        return ch - '0';
-    }
-    if (isupper(ch)) {
-        return ch - 'A' + 10;
-    }
-    if (islower(ch)) {
-        return ch - 'a' + 10;
-    }
-}
-
-std::string RLP::byteArrayToHexString(Bytes array) {
-    std::string ret;
-    for (int i = 0; i < array.data.size(); i++) {
-        int now = array.data[i];
-        ret += intToChar(now / 16);
-        ret += intToChar(now % 16);
-    }
-    return ret;
-}
-
-char RLP::intToChar(int x) {
-    if (x < 10) {
-        return '0' + x;
-    }
-    return 'a' + x - 10;
 }
 
 std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
@@ -108,7 +62,7 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
 
     key = keccak(keccak(userAddr + keccak(tokenAddr + pos)));
 
-    Proof balanceProof = Proof(key, path, tokenAddr, userAddr);
+    Proof balanceProof = Proof(key, path, pos, tokenAddr, userAddr);
 
     return std::make_pair(accoutProof, balanceProof);
 };

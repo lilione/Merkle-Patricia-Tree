@@ -5,9 +5,9 @@
 #ifndef MERKLE_PARTRICIA_TREE_NODE_H
 #define MERKLE_PARTRICIA_TREE_NODE_H
 
-
 #include <cstdint>
 #include <vector>
+
 #include "Bytes.h"
 
 class Node {
@@ -19,9 +19,7 @@ public:
     Node(std::vector<Bytes> content):
         content(content) {}
 
-    void operator= (const Node& other) {
-        this->content = other.content;
-    }
+    void operator= (const Node& other);
 };
 
 

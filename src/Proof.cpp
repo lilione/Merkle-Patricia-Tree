@@ -6,6 +6,7 @@
 #include "Proof.h"
 
 void Proof::output(Proof proof) {
+    printf("key is ");
     for (int k = 0; k < proof.key.data.size(); k++) {
         printf("%d ", proof.key.data[k]);
     }

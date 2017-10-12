@@ -6,6 +6,7 @@
 #define POW_QUEUE_H
 
 #include <deque>
+
 #include "Header.h"
 
 const unsigned int QUEUE_LENGTH = 50;

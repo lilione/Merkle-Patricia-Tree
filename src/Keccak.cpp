@@ -244,5 +244,5 @@ Bytes Keccak::operator()(Bytes byteArray) {
     std::string text = Transform::bytesToString(byteArray);
     reset();
     add(text.c_str(), text.size());
-    return rlp.hexStringToByteArray(getHash());
+    return Transform::hexStringToBytes(getHash());
 }

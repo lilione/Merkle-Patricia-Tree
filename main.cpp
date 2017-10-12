@@ -6,6 +6,7 @@
 #include "src/Keccak.h"
 #include "src/Proof.h"
 #include "src/Header.h"
+#include "src/Transform.h"
 
 int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     if (encodedPath[0] == '0' || encodedPath[0] == '2') {
@@ -44,12 +45,12 @@ std::pair<Bytes, bool> verifyProof(std::string key, std::vector<Node> proof, Byt
                     else
                         return std::make_pair(Bytes(), false);
                 }
-                wantHash = rlp.remove_length(currentNode.content[rlp.charToInt(key[keyPos])]);
+                wantHash = rlp.remove_length(currentNode.content[Transform::fromHex(key[keyPos])]);
                 keyPos += 1;
                 break;
             }
             case 2: {
-                int offset = removeFlag(rlp.byteArrayToHexString(rlp.remove_length(currentNode.content[0])), key, keyPos);
+                int offset = removeFlag(Transform::bytesToHexString(rlp.remove_length(currentNode.content[0])), key, keyPos);
                 if (offset == -1)
                     return std::make_pair(Bytes(), false);
                 keyPos += offset;
@@ -80,8 +81,7 @@ Bytes read_string() {
     for (int i = 0; i < strlen(st); i++) {
         if (st[i] != ' ') ret += st[i];
     }
-    RLP rlp;
-    return rlp.hexStringToByteArray(ret);
+    return Transform::hexStringToBytes(ret);
 }
 
 bool read() {
@@ -96,7 +96,7 @@ bool read() {
 
     Bytes accountRootHash = keccak(rlp.encodeList(accoutProof.path[0].content));
 
-    auto ret = verifyProof(rlp.byteArrayToHexString(accoutProof.key), accoutProof.path, accountRootHash);
+    auto ret = verifyProof(Transform::bytesToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 
     if (!ret.second) {
         printf("accountProof Failed!\n");
@@ -107,7 +107,7 @@ bool read() {
     Account account = rlp.decodeAccount(ret.first);
     Bytes balanceRootHash = account.rootHash;
 
-    ret = verifyProof(rlp.byteArrayToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
+    ret = verifyProof(Transform::bytesToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
 
     if (!ret.second) {
         printf("balanceProof Failed!\n");

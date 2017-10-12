@@ -10,12 +10,20 @@
 #include "uint256_t.h"
 
 int Transform::fromHex(char _i) {
-    if (_i >= '0' && _i <= '9')
+    if (isdigit(_i))
         return _i - '0';
-    if (_i >= 'a' && _i <= 'f')
+    if (islower(_i))
         return _i - 'a' + 10;
-    if (_i >= 'A' && _i <= 'F')
+    if (isupper(_i))
         return _i - 'A' + 10;
+
+    static_assert("should never get here");
+    return -1;
+}
+
+char Transform::toHex(int _i) {
+    if (_i < 10) return _i + '0';
+    if (_i < 16) return _i - 10 + 'a';
 
     static_assert("should never get here");
     return -1;
@@ -91,6 +99,24 @@ ethash_h256_t Transform::uint256_tToHash(uint256_t x) {
     }
     for (; i < 32; i++) {
         ret.b[32 - i - 1] = 0;
+    }
+    return ret;
+}
+
+Bytes Transform::intToBytes(int x) {
+    Bytes ret;
+    if (x != 0) {
+        ret = intToBytes(x / 256) + Bytes(x % 256);
+    }
+    return ret;
+}
+
+std::string Transform::bytesToHexString(Bytes array) {
+    std::string ret;
+    for (int i = 0; i < array.data.size(); i++) {
+        int now = array.data[i];
+        ret += toHex(now / 16);
+        ret += toHex(now % 16);
     }
     return ret;
 }

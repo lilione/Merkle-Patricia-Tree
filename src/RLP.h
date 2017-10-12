@@ -17,11 +17,7 @@ public:
     Bytes encodeString(Bytes);
     Bytes encodeList(std::vector<Bytes>);
     Bytes encodeLength(int, int);
-    Bytes intToByteArray(int);
-    Bytes hexStringToByteArray(std::string);
-    int charToInt(char);
-    std::string byteArrayToHexString(Bytes);
-    char intToChar(int);
+
     std::pair<Proof, Proof> decodeProof(Bytes);
     Account decodeAccount(Bytes);
     std::vector<Bytes> decodeList(Bytes);

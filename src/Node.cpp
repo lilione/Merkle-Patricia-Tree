@@ -3,3 +3,7 @@
 //
 
 #include "Node.h"
+
+void Node::operator= (const Node& other) {
+    this->content = other.content;
+}
