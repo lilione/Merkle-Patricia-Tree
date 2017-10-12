@@ -14,15 +14,15 @@
     printf("\n");
 }*/
 
-ethash_h256_t Utils::stringToBlockhash(std::string const& _s)
+/*ethash_h256_t Utils::stringToBlockhash(std::string const& _s)
 {
     ethash_h256_t ret;
     bytes b = hexStringToBytes(_s);
     memcpy(&ret, b.data(), b.size());
     return ret;
-}
+}*/
 
-int Utils::fromHex(char _i)
+/*int Utils::fromHex(char _i)
 {
     if (_i >= '0' && _i <= '9')
         return _i - '0';
@@ -33,7 +33,7 @@ int Utils::fromHex(char _i)
 
     static_assert("should never get here");
     return -1;
-}
+}*/
 
 /*char Utils::toHex(int _i) {
     if (_i < 10) return _i + '0';
@@ -43,7 +43,7 @@ int Utils::fromHex(char _i)
     return -1;
 }*/
 
-bytes Utils::hexStringToBytes(std::string const& _s)
+/*bytes Utils::hexStringToBytes(std::string const& _s)
 {
     unsigned s = (_s[0] == '0' && _s[1] == 'x') ? 2 : 0;
     std::vector<uint8_t> ret;
@@ -67,7 +67,7 @@ bytes Utils::hexStringToBytes(std::string const& _s)
             ret.push_back(0);
         }
     return ret;
-}
+}*/
 
 /*uint64_t Utils::hexStringToUint64_t(std::string const& _s) {
     uint64_t ret = 0;
@@ -92,7 +92,7 @@ bytes Utils::hexStringToBytes(std::string const& _s)
     return ret;
 }*/
 
-ethash_h256_t Utils::uint256_tToEthash_h256_t(uint256_t x) {
+/*ethash_h256_t Utils::uint256_tToEthash_h256_t(uint256_t x) {
     ethash_h256_t ret;
     int i;
     for (i = 0; x > 0; i++) {
@@ -103,7 +103,7 @@ ethash_h256_t Utils::uint256_tToEthash_h256_t(uint256_t x) {
         ret.b[32 - i - 1] = 0;
     }
     return ret;
-}
+}*/
 
 bool Utils::equal(ethash_h256_t x, ethash_h256_t y) {
     for (int i = 0; i < 32; i++) {
@@ -112,47 +112,11 @@ bool Utils::equal(ethash_h256_t x, ethash_h256_t y) {
     return true;
 };
 
-uint256_t Utils::hexStringToUint256_t(std::string st) {
-    if (st[0] == '0' && st[1] == 'x') {
-        st = st.substr(2);
-    }
 
-    uint64_t upper_lhs = 0, lower_lhs = 0, upper_rhs = 0, lower_rhs = 0;
-    std::stringstream ss;
-
-    ss << std::hex << st.substr(max_int(0, st.length() - 64), min_int(64, st.length()));
-    ss >> lower_rhs;
-
-    if (st.length() > 64) {
-        ss << std::hex << st.substr(max_int(0, st.length() - 64 * 2), min_int(64, st.length() - 64));
-        ss >> upper_rhs;
-    }
-
-    if (st.length() > 64 * 2) {
-        ss << std::hex << st.substr(max_int(0, st.length() - 64 * 3), min_int(64, st.length() - 64 * 2));
-        ss >> lower_lhs;
-    }
-
-    if (st.length() > 64 * 3) {
-        ss << std::hex << st.substr(max_int(0, st.length() - 64 * 4), min_int(64, st.length() - 64 * 3));
-        ss >> upper_lhs;
-    }
-
-    return uint256_t(upper_lhs, lower_lhs, upper_rhs, lower_rhs);
-}
 
 /*uint256_t Utils::uint64_tToUint256_t(uint64_t lower_rhs) {
     return uint256_t(0, 0, 0, lower_rhs);
 }*/
-
-uint256_t Utils::IntStringToUint256_t(std::string st) {
-    uint256_t ret = 0;
-    for (int i = 0; i < st.length(); i++) {
-        ret *= 10;
-        ret += st[i] - '0';
-    }
-    return ret;
-}
 
 uint256_t Utils::power(uint256_t x, uint256_t y) {
     uint256_t ret = 1, z = x;

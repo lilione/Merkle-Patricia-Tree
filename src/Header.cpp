@@ -10,19 +10,20 @@
 #include "Header.h"
 #include "Utils.h"
 #include "../libethash/internal.h"
+#include "Transform.h"
 
 uint256_t read_uint256_t() {
     char st[1000000];
     scanf("%s", st);
 
-    return Utils::IntStringToUint256_t(st);
+    return Transform::intStringToUint256_t(st);
 }
 
 ethash_h256_t read_hash() {
     char st[1000000];
     scanf("%s", st);
 
-    return Utils::stringToBlockhash(st);
+    return Transform::hexStringToHash(st);
 }
 
 std::string read_hexString() {
@@ -30,6 +31,12 @@ std::string read_hexString() {
     scanf("%s", st);
 
     return (st[0] == '0' && st[1] == 'x') ? std::string(st).substr(2) : st;
+}
+
+ethash_h256_t getDivide(uint256_t diff) {
+    uint256_t TwoTo255 = Utils::power(2, 255);
+    uint256_t _ret = TwoTo255 / diff * 2 + TwoTo255 % diff * 2 / diff;
+    return Transform::uint256_tToHash(_ret);
 }
 
 Header Header::readHeader() {
@@ -40,7 +47,7 @@ Header Header::readHeader() {
 
     blockNumber = read_uint256_t();
 
-    nonce = Utils::hexStringToUint256_t(read_hexString());
+    nonce = Transform::hexStringToUint256_t(read_hexString());
 
     difficulty = read_uint256_t();
 
@@ -54,9 +61,7 @@ Header Header::readHeader() {
 
     mixHash = read_hash();
 
-    uint256_t TwoTo255 = Utils::power(2, 255);
-    uint256_t _difficultyAfterDivide = TwoTo255 / difficulty * 2 + TwoTo255 % difficulty * 2 / difficulty;
-    difficultyAfterDivide = Utils::uint256_tToEthash_h256_t(_difficultyAfterDivide);
+    difficultyAfterDivide = getDivide(difficulty);
 
     extraData = read_hexString();
 

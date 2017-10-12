@@ -7,13 +7,24 @@
 
 
 #include "Bytes.h"
+#include "uint256_t.h"
 
 class Transform {
-
-    Bytes stringToBytes(std::string st);
-
 public:
+
+    static Bytes stringToBytes(std::string st);
+
+    static Bytes hexStringToBytes(std::string st);
+    static ethash_h256_t hexStringToHash(std::string st);
+    static uint256_t hexStringToUint256_t(std::string st);
+
     static std::string bytesToString(Bytes bytes);
+
+    static uint256_t intStringToUint256_t(std::string st);
+
+    static int fromHex(char _i);
+
+    static ethash_h256_t uint256_tToHash(uint256_t x);
 };
 
 

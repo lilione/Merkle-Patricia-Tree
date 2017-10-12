@@ -5,6 +5,7 @@
 #include "src/Node.h"
 #include "src/Keccak.h"
 #include "src/Proof.h"
+#include "src/Header.h"
 
 int removeFlag(std::string encodedPath, std::string key, int keyPos) {
     if (encodedPath[0] == '0' || encodedPath[0] == '2') {
@@ -126,5 +127,11 @@ bool read() {
 int main() {
     freopen("../data/inputProof.txt", "r", stdin);
     read();
+    fclose(stdin);
+
+    freopen("../data/inputHeader.txt", "r", stdin);
+    Header parentHeader = Header::readHeader();
+    Header header = Header::readHeader();
+    Header::check(header, parentHeader) ? printf("Header Validation Success!\n") : printf("Header Validation Failed!\n");
     fclose(stdin);
 }
