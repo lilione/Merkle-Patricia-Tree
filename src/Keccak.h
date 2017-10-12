@@ -5,8 +5,8 @@
 #ifndef MERKLE_PARTRICIA_TREE_KECCAK_H
 #define MERKLE_PARTRICIA_TREE_KECCAK_H
 
-
 #include <string>
+
 #include "Bytes.h"
 
 class Keccak //: public Hash

@@ -8,28 +8,37 @@
 
 #include "Bytes.h"
 #include "uint256_t.h"
+#include "Address.h"
 
 class Transform {
 public:
 
-    static int fromHex(char _i);
-    static char toHex(int _i);
+    static int fromHex(char);
+    static char toHex(int);
 
-    static Bytes stringToBytes(std::string st);
+    static Bytes stringToBytes(std::string);
 
-    static Bytes hexStringToBytes(std::string st);
-    static ethash_h256_t hexStringToHash(std::string st);
-    static uint256_t hexStringToUint256_t(std::string st);
+    static Bytes hexStringToBytes(std::string);
+    static ethash_h256_t hexStringToHash(std::string);
+    static uint256_t hexStringToUint256(std::string);
 
-    static std::string bytesToString(Bytes bytes);
-    static std::string bytesToHexString(Bytes array);
+    static std::string bytesToString(Bytes);
+    static std::string bytesToHexString(Bytes);
+    static ethash_h256_t bytesToHash(Bytes);
+    static Address bytesToAddr(Bytes);
+    static uint256_t bytesToUint256(Bytes);
+    static uint64_t bytesToUint64(Bytes);
 
-    static uint256_t intStringToUint256_t(std::string st);
+    static Bytes hashToBytes(ethash_h256_t);
 
-    static ethash_h256_t uint256_tToHash(uint256_t x);
+    static Bytes addrToBytes(Address);
 
-    static Bytes intToBytes(int x);
+    static uint256_t intStringToUint256(std::string);
 
+    static ethash_h256_t uint256ToHash(uint256_t);
+    static Bytes uint256ToBytes(uint256_t);
+
+    static Bytes intToBytes(int);
 
 };
 

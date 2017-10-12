@@ -9,6 +9,7 @@
 
 #include "../libethash/ethash.h"
 #include "uint256_t.h"
+#include "Bytes.h"
 
 using byte = uint8_t;
 using bytes = std::vector<byte>;
@@ -22,6 +23,10 @@ public:
     static uint256_t min(uint256_t x, uint256_t y);
 
     static uint256_t max(uint256_t x, uint256_t y);
+
+    static Bytes readHexString();
+
+    static void outputHex(ethash_h256_t);
 };
 
 

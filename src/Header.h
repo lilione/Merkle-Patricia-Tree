@@ -9,40 +9,63 @@
 
 #include "../libethash/ethash.h"
 #include "uint256_t.h"
+#include "Address.h"
+#include "Bytes.h"
 
 class Header {
 public:
-    uint256_t blockNumber, difficulty, timestamp, gasLimit, gasUsed;
-    ethash_h256_t minerHash, difficultyAfterDivide, mixHash;
+    ethash_h256_t parentHash, uncleHash;
+    Address coinBase;
+    ethash_h256_t stateRoot, txRoot, receiptRoot;
+    Bytes logsBloom;
+    uint256_t difficulty, number, gasLimit, gasUsed, timestamp;
+    Bytes extraData;//no more than 32 bytes
+    ethash_h256_t mixHash;
     uint64_t nonce;
-    std::string extraData;
 
-    Header() {}
+    ethash_h256_t minerHash, diffAfterDivide;
 
-    Header(uint256_t blockNumber,
-           uint64_t nonce,
+    Header(ethash_h256_t parentHash,
+           ethash_h256_t uncleHash,
+           Address coinBase,
+           ethash_h256_t stateRoot,
+           ethash_h256_t txRoot,
+           ethash_h256_t receiptRoot,
+           Bytes logsBloom,
            uint256_t difficulty,
-           uint256_t timestamp,
+           uint256_t number,
            uint256_t gasLimit,
            uint256_t gasUsed,
-           ethash_h256_t minerHash,
-           ethash_h256_t difficultyAfterDivide,
+           uint256_t timestamp,
+           Bytes extraData,
            ethash_h256_t mixHash,
-           std::string extraData) :
-            blockNumber(blockNumber),
-            nonce(nonce),
+           uint64_t nonce) :
+            parentHash(parentHash),
+            uncleHash(uncleHash),
+            coinBase(coinBase),
+            stateRoot(stateRoot),
+            txRoot(txRoot),
+            receiptRoot(receiptRoot),
+            logsBloom(logsBloom),
             difficulty(difficulty),
-            timestamp(timestamp),
+            number(number),
             gasLimit(gasLimit),
             gasUsed(gasUsed),
-            minerHash(minerHash),
-            difficultyAfterDivide(difficultyAfterDivide),
+            timestamp(timestamp),
+            extraData(extraData),
             mixHash(mixHash),
-            extraData(extraData) {}
+            nonce(nonce)
+    {
+        diffAfterDivide = getDivide(difficulty);
+        minerHash = calcMinerHash();
+    }
 
-    static Header readHeader();
+    ethash_h256_t getDivide(uint256_t);
+    ethash_h256_t calcMinerHash();
 
     static bool check(Header header, Header parentHeader);
+
+    static void output(Header);
 
 };
 #endif //POW_HEADER_H

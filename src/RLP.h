@@ -11,18 +11,21 @@
 #include "Bytes.h"
 #include "Proof.h"
 #include "Account.h"
+#include "Header.h"
 
 class RLP {
 public:
-    Bytes encodeString(Bytes);
-    Bytes encodeList(std::vector<Bytes>);
-    Bytes encodeLength(int, int);
+    static Bytes encodeString(Bytes);
+    static Bytes encodeList(std::vector<Bytes>);
+    static Bytes encodeLength(int, int);
 
-    std::pair<Proof, Proof> decodeProof(Bytes);
-    Account decodeAccount(Bytes);
-    std::vector<Bytes> decodeList(Bytes);
-    Bytes remove_length(Bytes);
-    int decodeLength(Bytes, int&);
+    static std::pair<Proof, Proof> decodeProof(Bytes);
+    static Account decodeAccount(Bytes);
+    static Header decodeHeader(Bytes);
+
+    static std::vector<Bytes> decodeList(Bytes);
+    static Bytes remove_length(Bytes);
+    static int decodeLength(Bytes, int&);
 };
 
 #endif //MERKLE_PARTRICIA_TREE_RLP_H

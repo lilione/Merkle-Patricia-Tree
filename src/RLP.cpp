@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+
 #include "RLP.h"
 #include "Keccak.h"
 #include "Transform.h"
@@ -82,6 +83,34 @@ Account RLP::decodeAccount(Bytes input) {
     Bytes rootHash = remove_length(elements[2]);
     Bytes codeHash = remove_length(elements[3]);
     return Account(nonce, balance, rootHash, codeHash);
+}
+
+Header RLP::decodeHeader(Bytes input) {
+    std::vector<Bytes> elements = decodeList(input);
+    ethash_h256_t parentHash = Transform::bytesToHash(remove_length(elements[0]));
+    ethash_h256_t uncleHash = Transform::bytesToHash(remove_length(elements[1]));
+    Address coinBase = Transform::bytesToAddr(remove_length(elements[2]));
+    ethash_h256_t stateRoot = Transform::bytesToHash(remove_length(elements[3]));
+    ethash_h256_t txRoot = Transform::bytesToHash(remove_length(elements[4]));
+    ethash_h256_t receiptRoot = Transform::bytesToHash(remove_length(elements[5]));
+    Bytes logsBloom = remove_length(elements[6]);
+    uint256_t difficulty = Transform::bytesToUint256(remove_length(elements[7]));
+    uint256_t number = Transform::bytesToUint256(remove_length(elements[8]));
+    uint256_t gasLimit = Transform::bytesToUint256(remove_length(elements[9]));
+    uint256_t gasUsed = Transform::bytesToUint256(remove_length(elements[10]));
+    uint256_t timestamp = Transform::bytesToUint256(remove_length(elements[11]));
+    Bytes extraData = remove_length(elements[12]);
+    ethash_h256_t mixHash = Transform::bytesToHash(remove_length(elements[13]));
+    uint64_t nonce = Transform::bytesToUint64(remove_length(elements[14]));
+
+    return Header(parentHash, uncleHash,
+                  coinBase,
+                  stateRoot, txRoot, receiptRoot,
+                  logsBloom,
+                  difficulty, number, gasLimit, gasUsed, timestamp,
+                  extraData,
+                  mixHash,
+                  nonce);
 }
 
 std::vector<Bytes> RLP::decodeList(Bytes input) {

@@ -130,7 +130,7 @@ static inline int hash(uint8_t* out, size_t outlen,
 	xorin(a, in, inlen);
 	// Apply P
 	P(a);
-	// Squeeze output.
+	// Squeeze outputHex.
 	foldP(out, outlen, setout);
 	setout(a, out, outlen);
 	memset(a, 0, 200);

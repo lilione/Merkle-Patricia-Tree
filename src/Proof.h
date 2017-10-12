@@ -24,6 +24,10 @@ public:
             key(key), path(path), pos(pos), tokenAddr(tokenAddr), userAddr(userAddr) {}
 
     static void output(Proof);
+
+    static std::pair<Bytes, bool> verifyProof(std::string, std::vector<Node>, Bytes);
+
+    static int removeFlag(std::string, std::string, int);
 };
 
 

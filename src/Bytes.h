@@ -5,7 +5,6 @@
 #ifndef MERKLE_PARTRICIA_TREE_BYTEARRAY_H
 #define MERKLE_PARTRICIA_TREE_BYTEARRAY_H
 
-
 #include <cstdint>
 #include <vector>
 #include <cstring>

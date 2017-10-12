@@ -5,7 +5,6 @@
 #ifndef MERKLE_PARTRICIA_TREE_ACCOUNT_H
 #define MERKLE_PARTRICIA_TREE_ACCOUNT_H
 
-
 #include "Bytes.h"
 #include "uint256_t.h"
 #include "../libethash/ethash.h"

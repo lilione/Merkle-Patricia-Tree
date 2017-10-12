@@ -284,7 +284,7 @@ extern const uint128_t uint128_0;
 extern const uint128_t uint128_1;
 
 // lhs type T as first arguemnt
-// If the output is not a bool, casts to type T
+// If the outputHex is not a bool, casts to type T
 
 // Bitwise Operators
 template <typename T> uint128_t operator&(const T & lhs, const uint128_t & rhs){
