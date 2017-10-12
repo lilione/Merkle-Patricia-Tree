@@ -22,15 +22,14 @@ public:
     static uint256_t hexStringToUint256_t(std::string st);
 
     static std::string bytesToString(Bytes bytes);
+    static std::string bytesToHexString(Bytes array);
 
     static uint256_t intStringToUint256_t(std::string st);
-
 
     static ethash_h256_t uint256_tToHash(uint256_t x);
 
     static Bytes intToBytes(int x);
 
-    static std::string bytesToHexString(Bytes array);
 
 };
 
