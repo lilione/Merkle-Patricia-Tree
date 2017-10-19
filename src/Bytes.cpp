@@ -49,6 +49,14 @@ Bytes Bytes::substr(int start, int end) {
     return ret;
 }
 
+Bytes Bytes::substr(int start) {
+    Bytes ret;
+    for (int i = start; i < data.size(); i++) {
+        ret.data.push_back(data[i]);
+    }
+    return ret;
+}
+
 void Bytes::output(Bytes byteArray) {
     for (int i = 0; i < byteArray.data.size(); i++) {
         printf("%d ", byteArray.data[i]);

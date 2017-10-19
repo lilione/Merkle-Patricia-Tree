@@ -30,6 +30,7 @@ public:
     void operator= (const Bytes&);
 
     Bytes substr(int, int);
+    Bytes substr(int);
 
     static void output(Bytes);
     static void outputHex(Bytes);

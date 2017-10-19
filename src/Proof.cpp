@@ -8,6 +8,7 @@
 #include "Keccak.h"
 #include "RLP.h"
 #include "Transform.h"
+#include "Utils.h"
 
 void Proof::output(Proof proof) {
     printf("key is ");
@@ -43,13 +44,13 @@ int Proof::removeFlag(std::string encodedPath, std::string key, int keyPos) {
     return -1;
 }
 
-std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> proof, Bytes rootHash) {
+std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> proof, ethash_h256_t rootHash) {
     Keccak keccak;
-    Bytes wantHash = rootHash;
+    ethash_h256_t wantHash = rootHash;
     int keyPos = 0;
     for (int i = 0; i < proof.size(); i++) {
         Node currentNode = proof[i];
-        if (wantHash != keccak(RLP::encodeList(currentNode.content))) {
+        if (!Utils::equal(wantHash, Transform::bytesToHash(keccak(RLP::encodeList(currentNode.content))))) {
             printf("wantHash != keccak(rlp.encodeList(currentNode.content))\n");
             return std::make_pair(Bytes(), false);
         }
@@ -65,7 +66,7 @@ std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> pro
                     else
                         return std::make_pair(Bytes(), false);
                 }
-                wantHash = RLP::remove_length(currentNode.content[Transform::fromHex(key[keyPos])]);
+                wantHash = Transform::bytesToHash(RLP::remove_length(currentNode.content[Transform::fromHex(key[keyPos])]));
                 keyPos += 1;
                 break;
             }
@@ -80,7 +81,7 @@ std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> pro
                     }
                     return std::make_pair(Bytes(), false);
                 } else {
-                    wantHash = RLP::remove_length(currentNode.content[1]);
+                    wantHash = Transform::bytesToHash(RLP::remove_length(currentNode.content[1]));
                 }
                 break;
             }

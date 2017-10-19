@@ -7,18 +7,20 @@
 
 #include "Bytes.h"
 #include "uint256_t.h"
+#include "Queue.h"
 
 class Inf {
-    Bytes pos, tokenAddr, userAddr;
+public:
+    uint pos;
+    Address tokenAddr, userAddr;
     uint256_t value;
 
     Inf() {}
 
-    Inf(Bytes pos, Bytes tokenAddr, Bytes userAddr, uint256_t value):
+    Inf(uint pos, Address tokenAddr, Address userAddr, uint256_t value):
             pos(pos), tokenAddr(tokenAddr), userAddr(userAddr), value(value) {}
 
-public:
-    static Inf getInf();
+    static Inf getInf(const Queue&);
 };
 
 

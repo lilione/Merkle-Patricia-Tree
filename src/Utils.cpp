@@ -11,7 +11,10 @@
 
 bool Utils::equal(ethash_h256_t x, ethash_h256_t y) {
     for (int i = 0; i < 32; i++) {
-        if (x.b[i] != y.b[i]) return false;
+        if (x.b[i] != y.b[i]) {
+            printf("%d\n", i);
+            return false;
+        }
     };
     return true;
 };

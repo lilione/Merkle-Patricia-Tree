@@ -28,6 +28,7 @@ public:
     static Address bytesToAddr(Bytes);
     static uint256_t bytesToUint256(Bytes);
     static uint64_t bytesToUint64(Bytes);
+    static uint bytesToUint(Bytes);
 
     static Bytes hashToBytes(ethash_h256_t);
 

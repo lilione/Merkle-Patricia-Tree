@@ -57,11 +57,14 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
         path.push_back(Node(decodeList(path_list[i])));
     }
 
-    Bytes userAddr = remove_length(elements[3]);
-    Bytes tokenAddr = remove_length(elements[4]);
-    Bytes pos = remove_length(elements[5]);
+    Bytes _userAddr = remove_length(elements[3]);
+    Bytes _tokenAddr = remove_length(elements[4]);
+    Bytes _pos = remove_length(elements[5]);
+    key = keccak(keccak(_userAddr + keccak(_tokenAddr + _pos)));
 
-    key = keccak(keccak(userAddr + keccak(tokenAddr + pos)));
+    Address userAddr = Transform::bytesToAddr(_userAddr);
+    Address tokenAddr = Transform::bytesToAddr(_tokenAddr);
+    uint pos = Transform::bytesToUint(_pos);
 
     Proof balanceProof = Proof(key, path, pos, tokenAddr, userAddr);
 
@@ -80,8 +83,8 @@ Account RLP::decodeAccount(Bytes input) {
     for (int i = 0; i < _balance.data.size(); i++) {
         balance = balance * 256 + _balance.data[i];
     }
-    Bytes rootHash = remove_length(elements[2]);
-    Bytes codeHash = remove_length(elements[3]);
+    ethash_h256_t rootHash = Transform::bytesToHash(remove_length(elements[2]));
+    ethash_h256_t codeHash = Transform::bytesToHash(remove_length(elements[3]));
     return Account(nonce, balance, rootHash, codeHash);
 }
 

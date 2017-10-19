@@ -15,7 +15,7 @@ bool Queue::addNewHeader(const Header& header) {
     return false;
 }
 
-Header Queue::getLast() {
+Header Queue::getLast()const {
     return headers.back();
 }
 

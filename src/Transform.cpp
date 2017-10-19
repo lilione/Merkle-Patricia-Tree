@@ -106,7 +106,8 @@ ethash_h256_t Transform::bytesToHash(Bytes bytes) {
 
 Address Transform::bytesToAddr(Bytes bytes) {
     Address ret;
-    if (bytes.data.size() == 20) {
+    if (bytes.data.size() >= 20) {
+        bytes = bytes.substr(bytes.data.size() - 20);
         int i = 0;
         for ( ; i < bytes.data.size(); i++) {
             ret.data[i] = bytes.data[i];
@@ -129,6 +130,14 @@ uint256_t Transform::bytesToUint256(Bytes bytes) {
 
 uint64_t Transform::bytesToUint64(Bytes bytes) {
     uint64_t ret = 0;
+    for (int i = 0; i < bytes.data.size(); i++) {
+        ret = ret * 256 + bytes.data[i];
+    }
+    return ret;
+}
+
+uint Transform::bytesToUint(Bytes bytes) {
+    uint ret = 0;
     for (int i = 0; i < bytes.data.size(); i++) {
         ret = ret * 256 + bytes.data[i];
     }

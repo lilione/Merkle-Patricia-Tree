@@ -9,7 +9,7 @@
 #include "RLP.h"
 #include "Transform.h"
 
-Inf Inf::getInf() {
+Inf Inf::getInf(const Queue& queue) {
     Keccak keccak;
 
     Bytes encoded = Utils::readHexString();
@@ -18,7 +18,7 @@ Inf Inf::getInf() {
 
     Proof accoutProof = proofs.first, balanceProof = proofs.second;
 
-    Bytes accountRootHash = keccak(RLP::encodeList(accoutProof.path[0].content));
+    ethash_h256_t accountRootHash = queue.getLast().stateRoot;
 
     auto ret = Proof::verifyProof(Transform::bytesToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 
@@ -29,7 +29,7 @@ Inf Inf::getInf() {
     printf("accountProof Success!\n");
 
     Account account = RLP::decodeAccount(ret.first);
-    Bytes balanceRootHash = account.rootHash;
+    ethash_h256_t balanceRootHash = account.rootHash;
 
     ret = Proof::verifyProof(Transform::bytesToHexString(balanceProof.key), balanceProof.path, balanceRootHash);
 
@@ -40,10 +40,7 @@ Inf Inf::getInf() {
     printf("balanceProof Success!\n");
 
     Bytes _balance = RLP::remove_length(ret.first);
-    uint256_t balance = 0;
-    for (int i = 0; i < _balance.data.size(); i++) {
-        balance = balance * 256 + _balance.data[i];
-    }
+    uint256_t balance = Transform::bytesToUint256(_balance);
 
     return Inf(balanceProof.pos, balanceProof.tokenAddr, balanceProof.userAddr, balance);
 }

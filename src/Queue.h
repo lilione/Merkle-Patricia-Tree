@@ -17,7 +17,7 @@ private:
 
 public:
     bool addNewHeader(const Header& header);
-    Header getLast();
+    Header getLast()const;
     unsigned int getLength();
 };
 

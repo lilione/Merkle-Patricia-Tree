@@ -13,10 +13,10 @@ class Account {
 public:
     uint64_t nonce;
     uint256_t balance;
-    Bytes rootHash;
-    Bytes codeHash;
+    ethash_h256_t rootHash;
+    ethash_h256_t codeHash;
 
-    Account(uint64_t nonce, uint256_t balance, Bytes rootHash, Bytes codeHash):
+    Account(uint64_t nonce, uint256_t balance, ethash_h256_t rootHash, ethash_h256_t codeHash):
             nonce(nonce), balance(balance), rootHash(rootHash), codeHash(codeHash) {}
 };
 
