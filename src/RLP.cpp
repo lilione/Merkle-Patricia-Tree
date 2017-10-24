@@ -38,7 +38,7 @@ Bytes RLP::encodeLength(int L, int offset) {
     return Bytes(BL.data.size() + offset + 55) + BL;
 }
 
-std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
+std::pair<AccountProof, BalanceProof> RLP::decodeProof(Bytes input) {
     Keccak keccak;
     RLP rlp;
 
@@ -49,7 +49,7 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
         path.push_back(Node(decodeList(path_list[i])));
     }
     Bytes key = keccak(remove_length(elements[1]));
-    Proof accoutProof = Proof(key, path);
+    AccountProof accoutProof = AccountProof(key, path);
 
     path_list = decodeList(elements[2]);
     path.clear();
@@ -66,7 +66,7 @@ std::pair<Proof, Proof> RLP::decodeProof(Bytes input) {
     Address tokenAddr = Transform::bytesToAddr(_tokenAddr);
     uint pos = Transform::bytesToUint(_pos);
 
-    Proof balanceProof = Proof(key, path, pos, tokenAddr, userAddr);
+    BalanceProof balanceProof = BalanceProof(key, path, pos, tokenAddr, userAddr);
 
     return std::make_pair(accoutProof, balanceProof);
 };

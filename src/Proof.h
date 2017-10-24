@@ -13,18 +13,9 @@ class Proof {
 public:
     Bytes key;
     std::vector<Node> path;
-    uint pos;
-    Address tokenAddr, userAddr;
-
-    Proof() {}
 
     Proof(Bytes key, std::vector<Node> path):
             key(key), path(path) {}
-
-    Proof(Bytes key, std::vector<Node> path, uint pos, Address tokenAddr, Address userAddr):
-            key(key), path(path), pos(pos), tokenAddr(tokenAddr), userAddr(userAddr) {}
-
-    static void output(Proof);
 
     static std::pair<Bytes, bool> verifyProof(std::string, std::vector<Node>, ethash_h256_t);
 

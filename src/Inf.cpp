@@ -16,7 +16,8 @@ Inf Inf::getInf(const Queue& queue) {
 
     auto proofs = RLP::decodeProof(encoded);
 
-    Proof accoutProof = proofs.first, balanceProof = proofs.second;
+    AccountProof accoutProof = proofs.first;
+    BalanceProof balanceProof = proofs.second;
 
     ethash_h256_t accountRootHash = queue.getLast().stateRoot;
 

@@ -12,6 +12,8 @@
 #include "Proof.h"
 #include "Account.h"
 #include "Header.h"
+#include "AccountProof.h"
+#include "BalanceProof.h"
 
 class RLP {
 public:
@@ -19,7 +21,7 @@ public:
     static Bytes encodeList(std::vector<Bytes>);
     static Bytes encodeLength(int, int);
 
-    static std::pair<Proof, Proof> decodeProof(Bytes);
+    static std::pair<AccountProof, BalanceProof> decodeProof(Bytes);
     static Account decodeAccount(Bytes);
     static Header decodeHeader(Bytes);
 
