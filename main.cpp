@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdio>
 
 #include "src/RLP.h"
 #include "src/Utils.h"

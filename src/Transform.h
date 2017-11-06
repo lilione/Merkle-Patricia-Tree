@@ -41,6 +41,8 @@ public:
 
     static Bytes intToBytes(int);
 
+    static Bytes uint64ToBytes(uint64_t);
+
 };
 
 

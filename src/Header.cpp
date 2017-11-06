@@ -129,6 +129,29 @@ ethash_h256_t Header::calcMinerHash() {
     return Transform::bytesToHash(hash);
 }
 
+ethash_h256_t Header::calcBlockHash() {
+    std::vector<Bytes> list;
+    list.push_back(RLP::encodeString(Transform::hashToBytes(parentHash)));
+    list.push_back(RLP::encodeString(Transform::hashToBytes(uncleHash)));
+    list.push_back(RLP::encodeString(Transform::addrToBytes(coinBase)));
+    list.push_back(RLP::encodeString(Transform::hashToBytes(stateRoot)));
+    list.push_back(RLP::encodeString(Transform::hashToBytes(txRoot)));
+    list.push_back(RLP::encodeString(Transform::hashToBytes(receiptRoot)));
+    list.push_back(RLP::encodeString(logsBloom));
+    list.push_back(RLP::encodeString(Transform::uint256ToBytes(difficulty)));
+    list.push_back(RLP::encodeString(Transform::uint256ToBytes(number)));
+    list.push_back(RLP::encodeString(Transform::uint256ToBytes(gasLimit)));
+    list.push_back(RLP::encodeString(Transform::uint256ToBytes(gasUsed)));
+    list.push_back(RLP::encodeString(Transform::uint256ToBytes(timestamp)));
+    list.push_back(RLP::encodeString(extraData));
+    list.push_back(RLP::encodeString(Transform::hashToBytes(mixHash)));
+    list.push_back(RLP::encodeString(Transform::uint64ToBytes(nonce)));
+    Bytes rlp = RLP::encodeList(list);
+    Keccak keccak;
+    Bytes hash = keccak(rlp);
+    return Transform::bytesToHash(hash);
+}
+
 void Header::output(Header header) {
     printf("parentHash\n");
     Utils::outputHex(header.parentHash);
@@ -146,14 +169,20 @@ void Header::output(Header header) {
     Bytes::outputHex(header.logsBloom);
     printf("difficulty\n");
     std::cout<<header.difficulty<<std::endl;
+    printf("number\n");
     std::cout<<header.number<<std::endl;
     std::cout<<header.gasLimit<<std::endl;
     std::cout<<header.gasUsed<<std::endl;
     std::cout<<header.timestamp<<std::endl;
     Bytes::outputHex(header.extraData);
+    printf("mixHash\n");
     Utils::outputHex(header.mixHash);
+    printf("nonce\n");
     std::cout<<header.nonce<<std::endl;
 
+    printf("minerHash\n");
     Utils::outputHex(header.minerHash);
     Utils::outputHex(header.diffAfterDivide);
+    printf("blockHash\n");
+    Utils::outputHex(header.blockHash);
 }

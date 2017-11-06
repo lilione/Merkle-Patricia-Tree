@@ -23,7 +23,7 @@ public:
     ethash_h256_t mixHash;
     uint64_t nonce;
 
-    ethash_h256_t minerHash, diffAfterDivide;
+    ethash_h256_t minerHash, diffAfterDivide, blockHash;
 
     Header(ethash_h256_t parentHash,
            ethash_h256_t uncleHash,
@@ -58,10 +58,12 @@ public:
     {
         diffAfterDivide = getDivide(difficulty);
         minerHash = calcMinerHash();
+        blockHash = calcBlockHash();
     }
 
     ethash_h256_t getDivide(uint256_t);
     ethash_h256_t calcMinerHash();
+    ethash_h256_t calcBlockHash();
 
     static bool check(Header header, Header parentHeader);
 

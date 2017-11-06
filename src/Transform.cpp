@@ -199,3 +199,11 @@ Bytes Transform::intToBytes(int x) {
     }
     return ret;
 }
+
+Bytes Transform::uint64ToBytes(uint64_t x) {
+    Bytes ret;
+    if (x != 0) {
+        ret = uint64ToBytes(x / 256) + Bytes(x % 256);
+    }
+    return ret;
+}
