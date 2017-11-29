@@ -9,17 +9,19 @@
 #include "RLP.h"
 #include "Transform.h"
 
-Inf Inf::getInf(const Queue& queue) {
+//Inf Inf::getInf(const Queue& queue) {
+Inf Inf::getInf() {
     Keccak keccak;
 
     Bytes encoded = Utils::readHexString();
 
-    auto proofs = RLP::decodeProof(encoded);
+    auto proofs = RLP::decodeDepositProof(encoded);
 
     AccountProof accoutProof = proofs.first;
     BalanceProof balanceProof = proofs.second;
 
-    ethash_h256_t accountRootHash = queue.getLast().stateRoot;
+    ethash_h256_t accountRootHash = Transform::bytesToHash(keccak(RLP::encodeList(accoutProof.path[0].content)));
+    //ethash_h256_t accountRootHash = queue.getLast().stateRoot;
 
     auto ret = Proof::verifyProof(Transform::bytesToHexString(accoutProof.key), accoutProof.path, accountRootHash);
 

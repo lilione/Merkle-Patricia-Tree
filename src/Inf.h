@@ -20,7 +20,8 @@ public:
     Inf(uint pos, Address tokenAddr, Address userAddr, uint256_t value):
             pos(pos), tokenAddr(tokenAddr), userAddr(userAddr), value(value) {}
 
-    static Inf getInf(const Queue&);
+    //static Inf getInf(const Queue&);
+    static Inf getInf();
 };
 
 

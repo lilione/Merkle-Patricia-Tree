@@ -38,28 +38,30 @@ Bytes RLP::encodeLength(int L, int offset) {
     return Bytes(BL.data.size() + offset + 55) + BL;
 }
 
-std::pair<AccountProof, BalanceProof> RLP::decodeProof(Bytes input) {
+std::pair<AccountProof, BalanceProof> RLP::decodeDepositProof(Bytes input) {
     Keccak keccak;
-    RLP rlp;
+    int cnt = 0;
 
     std::vector<Bytes> elements = decodeList(input);
-    std::vector<Bytes> path_list = decodeList(elements[0]);
+    std::vector<Bytes> path_list = decodeList(elements[cnt++]);
     std::vector<Node> path;
     for (int i = 0; i < path_list.size(); i++) {
         path.push_back(Node(decodeList(path_list[i])));
     }
-    Bytes key = keccak(remove_length(elements[1]));
-    AccountProof accoutProof = AccountProof(key, path);
+    Bytes key = keccak(remove_length(elements[cnt++]));
+    //Bytes blockNumber = remove_length(elements[cnt++]);
+    //AccountProof accountProof = AccountProof(key, path, blockNumber);
+    AccountProof accountProof = AccountProof(key, path);
 
-    path_list = decodeList(elements[2]);
+    path_list = decodeList(elements[cnt++]);
     path.clear();
     for (int i = 0; i < path_list.size(); i++) {
         path.push_back(Node(decodeList(path_list[i])));
     }
 
-    Bytes _userAddr = remove_length(elements[3]);
-    Bytes _tokenAddr = remove_length(elements[4]);
-    Bytes _pos = remove_length(elements[5]);
+    Bytes _userAddr = remove_length(elements[cnt++]);
+    Bytes _tokenAddr = remove_length(elements[cnt++]);
+    Bytes _pos = remove_length(elements[cnt++]);
     key = keccak(keccak(_userAddr + keccak(_tokenAddr + _pos)));
 
     Address userAddr = Transform::bytesToAddr(_userAddr);
@@ -68,8 +70,8 @@ std::pair<AccountProof, BalanceProof> RLP::decodeProof(Bytes input) {
 
     BalanceProof balanceProof = BalanceProof(key, path, pos, tokenAddr, userAddr);
 
-    return std::make_pair(accoutProof, balanceProof);
-};
+    return std::make_pair(accountProof, balanceProof);
+}
 
 Account RLP::decodeAccount(Bytes input) {
     std::vector<Bytes> elements = decodeList(input);
@@ -116,6 +118,39 @@ Header RLP::decodeHeader(Bytes input) {
                   nonce);
 }
 
+ReceiptProof RLP::decodeReceiptProof(Bytes input) {
+    std::vector<Bytes> elements = decodeList(input);
+    std::vector<Bytes> path_list = decodeList(elements[0]);
+    std::vector<Node> path;
+    for (int i = 0; i < path_list.size(); i++) {
+        path.push_back(Node(decodeList(path_list[i])));
+    }
+    Bytes key = remove_length(elements[1]);
+    Bytes blockNumber = remove_length(elements[2]);
+    return ReceiptProof(key, path, blockNumber);
+}
+
+bool RLP::decodeReceipt(Bytes input) {
+    std::vector<Bytes> elements = decodeList(input);
+    std::vector<Bytes> logs = decodeList(elements[3]);
+    for (int i = 0; i < logs.size(); i++) {
+        std::vector<Bytes> log = decodeList(logs[i]);
+        if (log.size()) return true;
+        else return false;
+        Bytes address = remove_length(log[0]);
+        std::vector<Bytes> topics = decodeList(log[1]);
+        for (int j = 0; j < topics.size(); j++) {
+            topics[j] = remove_length(topics[j]);
+        }
+        Bytes _data = remove_length(log[2]);
+        std::vector<Bytes> data;
+        while (_data.data.size()) {
+            data.push_back(_data.substr(0, 32));
+            _data = _data.substr(32);
+        }
+    }
+}
+
 std::vector<Bytes> RLP::decodeList(Bytes input) {
     int pos = 0, len = decodeLength(input, pos);
     int end = len + pos;
@@ -138,7 +173,7 @@ Bytes RLP::remove_length(Bytes input) {
 int RLP::decodeLength(Bytes input, int& pos) {
     int len, offset;
     if (input.data[pos] < offset_list) {
-        if (input.data[pos] < 55) {
+        if (input.data[pos] < 128) {
             return 1;
         }
         offset = offset_string;

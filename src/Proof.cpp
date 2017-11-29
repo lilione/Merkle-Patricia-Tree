@@ -35,7 +35,7 @@ std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> pro
             return std::make_pair(Bytes(), false);
         }
         if (keyPos > key.length()) {
-            printf("keyPos > key.length()");
+            printf("keyPos > key.length()\n");
             return std::make_pair(Bytes(), false);;
         }
         switch(currentNode.content.size()) {
@@ -44,6 +44,7 @@ std::pair<Bytes, bool> Proof::verifyProof(std::string key, std::vector<Node> pro
                     if (i == proof.size() - 1)
                         return std::make_pair(RLP::remove_length(currentNode.content[16]), true);
                     else
+                        printf("i != proof.size() - 1\n");
                         return std::make_pair(Bytes(), false);
                 }
                 wantHash = Transform::bytesToHash(RLP::remove_length(currentNode.content[Transform::fromHex(key[keyPos])]));

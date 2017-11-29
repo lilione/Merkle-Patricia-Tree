@@ -41,6 +41,8 @@
 #include "sha3.h"
 #endif // WITH_CRYPTOPP
 
+#include "stdio.h"
+
 uint64_t ethash_get_datasize(uint64_t const block_number)
 {
 	assert(block_number / ETHASH_EPOCH_LENGTH < 2048);
@@ -300,6 +302,7 @@ ethash_light_t ethash_light_new_internal(uint64_t cache_size, ethash_h256_t cons
 	if (!ret) {
 		return NULL;
 	}
+	printf("%d", cache_size);
 	ret->cache = malloc((size_t)cache_size);
 	if (!ret->cache) {
 		goto fail_free_light;

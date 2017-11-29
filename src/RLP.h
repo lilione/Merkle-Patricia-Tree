@@ -14,6 +14,7 @@
 #include "Header.h"
 #include "AccountProof.h"
 #include "BalanceProof.h"
+#include "ReceiptProof.h"
 
 class RLP {
 public:
@@ -21,9 +22,11 @@ public:
     static Bytes encodeList(std::vector<Bytes>);
     static Bytes encodeLength(int, int);
 
-    static std::pair<AccountProof, BalanceProof> decodeProof(Bytes);
+    static std::pair<AccountProof, BalanceProof> decodeDepositProof(Bytes);
     static Account decodeAccount(Bytes);
     static Header decodeHeader(Bytes);
+    static ReceiptProof decodeReceiptProof(Bytes);
+    static bool decodeReceipt(Bytes);
 
     static std::vector<Bytes> decodeList(Bytes);
     static Bytes remove_length(Bytes);

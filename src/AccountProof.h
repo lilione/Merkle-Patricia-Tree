@@ -9,6 +9,9 @@
 
 class AccountProof : public Proof {
 public:
+    Bytes blockNumber;
+    AccountProof(Bytes key, std::vector<Node> path, Bytes blockNumber):
+            Proof(key, path), blockNumber(blockNumber) {}
     AccountProof(Bytes key, std::vector<Node> path):
             Proof(key, path) {}
 };
